@@ -3,4 +3,3 @@ openai
 plotly
 matplotlib
 pandas
-json
