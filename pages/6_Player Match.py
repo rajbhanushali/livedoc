@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from utils import get_dataframe_description
-
+from utils import *
 # Create the DataFrame
 st.set_page_config(
     page_title="Cerebro Event Analyzer",
