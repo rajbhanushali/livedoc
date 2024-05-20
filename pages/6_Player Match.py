@@ -10,8 +10,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-prompt = ("""
-You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. The tournament has 323 players across 32 different teams with average performers scoring 6 points per game, average field goal percentage of 42.5 percent, average RAM (which is a proprietary metric showing individual game performance) of 405.3 and C_RAM (cumulative ram) of 5.1. Can you take this table and describe the top players performances relative to the averages
+prompt = (f"""
+You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. The tournament has 323 players across 32 different teams with average performers scoring {ppg} points per game, average field goal percentage of {fg_pct} percent, average RAM (which is a proprietary metric showing individual game performance) of {ram} and C_RAM (cumulative ram) of {c_ram}. 
 
 Can you compare the two players in the passed dataframe both against each other and against the rest of the field? 
 
