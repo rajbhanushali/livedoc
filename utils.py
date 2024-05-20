@@ -27,7 +27,10 @@ def get_dataframe_description(dataframe: pd.DataFrame, prompt: str) -> str:
     description = response.choices[0].message.content
     return description
 
-eybl=pd.read_csv("EYBL.CSV")
+
+url_data = (r'https://raw.githubusercontent.com/cerebrosportsdev/livedoc/main/EYBL.csv')
+
+eybl=pd.read_csv(url_data)
 ppg=eybl['PTS/G'].mean()
 ppg = round(ppg,2)
 
