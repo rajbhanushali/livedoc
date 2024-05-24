@@ -1,8 +1,5 @@
 import streamlit as st
-import random
-
 from chatbot.assets.loading_popup import loading_popup_str
-
 from chatbot.prompting.sql_prompts import NO_RESPONSE_TEXT
 from chatbot.prompting.welcome_message import WELCOME_MESSAGE_PROMPT
 from chatbot.utils.helper import show_existing_chat_messages

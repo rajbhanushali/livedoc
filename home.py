@@ -1,7 +1,3 @@
-import email
-import io
-
-import numpy as np
 import pandas as pd
 import streamlit as st
 from streamlit_extras.app_logo import add_logo
@@ -9,35 +5,42 @@ from streamlit_extras.app_logo import add_logo
 from utils import *
 
 st.set_page_config(
-    page_title="Cerebro Event Analyzer",
+    page_title="CerebroEvent - Home",
     page_icon="🏀",
     layout="wide",
     initial_sidebar_state="expanded",
     
 )
-st.write("# Welcome to the Cerebro Event Analyzer 🏀")
+
+if "selected_event" not in st.session_state:
+    st.session_state.selected_event = ""
+
+
 st.markdown(
     """
+    ## Welcome to the Cerebro Event Analyzer 🏀
     Use this portal to quickly identify top performers in youth basketball events:
+    
+    *👈 To begin, select an event from the sidebar.*
+    
+    """
+)
 
-    👈 To begin, select an event from the sidebar. 
-    of how this app operates
-    ### The pages are as follows:
+st.caption(
+    """
+    The pages are as follows:
     - Overview
     - Most Outstanding Performance Ladder
     - All-Tourney Teams
-    - Skill Leaders
     - Full Leaderboard
-   
-"""
+    - Player Match
+    - CerebroAI
+    """
 )
 
 df = pd.DataFrame({
-    'Options': ["Select Option","EYBL", "Metro North", "NorCal Tip-Off Classic", "Forum Tip-off Classic"]
+    'Options': ["Select Option","Nike EYBL 17U - 2023", "Nike EYBL 17U - 2021", "Nike EYBL 17U - 2019", "Nike Hoop Summit - 2022", "Augusta Peach Jam - 2022"]
 })
-
-# Step 2 & 3: Use Streamlit for the web app with a sidebar dropdown pulling from the DataFrame.
-# Adding a title for clarity
 
 # Sidebar dropdown
 selected_option = st.sidebar.selectbox(
@@ -45,14 +48,12 @@ selected_option = st.sidebar.selectbox(
     df['Options']
 )
 
-#add_logo("https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2F5091af9f881c9c1d14eb408cf6b9162f.cdn.bubble.io%2Ff1623868126182x114384330409815780%2FCerebro%2520Logo%2520Black.png?w=&h=&auto=compress&dpr=1&fit=max")
-add_logo("logo2.png", height = 200)
+add_logo("assets/cerebro_logo.png", height = 210)
+
 # Step 4: Add a button for confirmation
-if st.sidebar.button('Confirm Selection'):
+if st.sidebar.button('Confirm Selection') and selected_option != "Select Option":
     # Step 5: Store the dropdown response in the session state upon button click.
-    st.session_state.selected_option = selected_option
+    st.session_state.selected_event = selected_option
     st.sidebar.success(f"You have selected: {selected_option}")
 
 # Displaying the selected option outside of the sidebar, if any selection is made
-
-

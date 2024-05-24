@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
 import openai
-import json
+import plotly.express as px
 from openai import OpenAI
+import altair as alt
 
 def get_dataframe_description(dataframe: pd.DataFrame, prompt: str) -> str:
     # Convert the DataFrame to CSV string
@@ -20,7 +21,8 @@ def get_dataframe_description(dataframe: pd.DataFrame, prompt: str) -> str:
     # Send the request to the ChatGPT API
     response = client.chat.completions.create(
         model="gpt-4o",  # Ensure you're using a model available in the new API
-        messages=messages
+        messages=messages,
+        stream=True
     )
     
     # Extract and return the description from the response
@@ -81,3 +83,58 @@ table_html = """
   </tr>
 </table>
 """
+
+def plot_bar_chart(dataframe):
+    fig = px.bar(
+        dataframe,
+        x="C_RAM",
+        y="PLAYER",
+        orientation='h',
+        title="Top Players by C-RAM Score",
+        color='C_RAM',
+        color_continuous_scale='viridis',
+        labels={'C-RAM': 'C-RAM Score', 'Name': 'Player Name'},
+        template='plotly_white'
+    )
+    fig.update_layout(
+        title_font_size=24,
+        xaxis_title_font_size=18,
+        yaxis_title_font_size=18,
+        yaxis={'categoryorder': 'total ascending'}
+    )
+    st.plotly_chart(fig)
+
+def plot_pie_chart(event_dataframe):
+  # Pie chart data
+  colors = ['#FFD700', '#C0C0C0', '#CD7F32', '#808080']  # Adjusted colors for contrast
+
+  gold_player_count = (event_dataframe['C_RAM'] > 10).sum()
+  silver_player_count = ((event_dataframe['C_RAM'] > 8.5) & (event_dataframe['C_RAM'] <= 10)).sum()
+  bronze_player_count = ((event_dataframe['C_RAM'] > 7) & (event_dataframe['C_RAM'] <= 8.5)).sum()
+  not_rated_player_count = len(event_dataframe) - (gold_player_count + silver_player_count + bronze_player_count)
+
+  categories = ['Gold', 'Silver', 'Bronze', 'Not Rated']
+  values = [gold_player_count, silver_player_count, bronze_player_count, not_rated_player_count]
+  pie_data = pd.DataFrame({
+    'Category': categories,
+    'Values': values
+  })
+  base = alt.Chart(pie_data).encode(
+    theta=alt.Theta("Values:Q", stack=True),
+    color=alt.Color("Category:N", scale=alt.Scale(domain=categories, range=colors))
+  )
+
+  arc = base.mark_arc(innerRadius=50, outerRadius=150, stroke="#fff")
+
+  st.altair_chart(arc, use_container_width=True)
+
+def color_cram_value(val):
+    if val >= 10:
+        color = 'gold'
+    elif 8.5 <= val < 10:
+        color = 'silver'
+    elif 7 <= val < 8.5:
+        color = 'brown'
+    else:
+        color = 'transparent'
+    return f'background-color: {color}'

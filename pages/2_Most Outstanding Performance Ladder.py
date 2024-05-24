@@ -1,68 +1,52 @@
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-from utils import get_dataframe_description
 import plotly.express as px
-import streamlit.components.v1 as components
+from streamlit_extras.app_logo import add_logo
 
-print("Running Most Outstanding")
+from utils import get_dataframe_description, color_cram_value
+from sql_queries import get_table_from_snowflake
 
-# Create the DataFrame
 st.set_page_config(
-    page_title="Cerebro Event Analyzer",
+    page_title="CerebroEvent - MOP Ladder",
     page_icon="🏀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+add_logo("assets/cerebro_logo.png", height = 300)
 
-data = {
-    
-    'PLAYER': [
-        'Cameron Boozer', 'Cayden Boozer', 'Jaylen Harrell', 'William Riley', 
-        'Adlan Elamin', 'Kedrick Simmons', 'Jaylen Cross', 'Cooper Flagg', 
-        'Isaiah Henry', 'Alexander Lloyd'
-    ],
-    'TEAM': [
-        'Nightrydas Elite (16U)', 'Nightrydas Elite (16U)', 'Expressions (16U)', 'UPlay (16U)', 
-        'Team Takeover (16U)', 'Team Thad (16U)', 'Team CP3 (16U)', 'Maine United (16U)', 
-        'Team CP3 (16U)', 'Nightrydas Elite (16U)'
-    ],
-    'W%': [1.000, 1.000, 0.800, 0.750, 0.800, 0.750, 0.800, 0.250, 0.800, 1.000],
-    'C-RAM': [17.3, 11.2, 10.9, 10.4, 10.0, 9.8, 8.8, 13.6, 8.7, 7.9],
-    'MOP SCORE': [229, 130, 113, 103, 101, 94, 85, 84, 83, 82]
-}
+if "selected_event" not in st.session_state or st.session_state.selected_event == "":
+    st.error(" ### Please return to Home and select an event ")
+    st.stop()
 
-df = pd.DataFrame(data)
+st.title(f"Most Outstanding Performance Ladder for {st.session_state.selected_event}")
 
-# Function to color the C-RAM values
-def color_cram_value(val):
-    if val >= 10:
-        color = 'gold'
-    elif 8.5 <= val < 10:
-        color = 'silver'
-    elif 7 <= val < 8.5:
-        color = 'beige'
-    else:
-        color = 'white'
-    return f'background-color: {color}'
+event_dataframe = get_table_from_snowflake(st.session_state.selected_event)
 
-# Streamlit page setup
-st.title("Most Outstanding Performance Ladder")
+top_10_cram = event_dataframe.nlargest(10, 'C_RAM')
 
-# Create columns for the DataFrame and the bar chart
-col1, col2 = st.columns(2)
+col_data, col_radar = st.columns(2)
 
 # Display the DataFrame in the first column with color coding
-with col1:
-    st.write("Player Rankings")
-    st.dataframe(df.style.applymap(color_cram_value, subset=['C-RAM']),hide_index=True)
+with col_data:
+    st.markdown("### Player Rankings")
+
+    selected_players = st.multiselect(
+        "Select Players for Radar Plot",
+        options=top_10_cram["PLAYER"].unique(),
+        default=top_10_cram["PLAYER"].iloc[:2]
+    )
+    st.dataframe(top_10_cram.style.applymap(color_cram_value, subset=['C_RAM']),hide_index=True)
 
 # Create the bar chart and display it in the second column
-with col2:
-    df = pd.read_csv("test2.csv")
-    fig = px.line_polar(df, r="points",
+with col_radar:
+    st.markdown("### Player Comparison using 5MS")
+    selected_players = top_10_cram[top_10_cram["PLAYER"].isin(selected_players)]
+
+    categories = ['PSP', 'ATR', 'DSI', 'FGS', 'THREE_PE']
+    radar_data = selected_players.melt(id_vars=['PLAYER'], value_vars=categories, var_name='categories', value_name='values')
+
+    fig = px.line_polar(radar_data, r="values",
                     theta="categories",
-                    color="player",
+                    color="PLAYER",
                     line_close=True,
                     #color_discrete_sequence=["#00eb93", "#4ed2ff"],
                     template="plotly_dark"
@@ -78,15 +62,16 @@ with col2:
 
     fig.update_layout(legend_font_color="black",title = "Player Comparison")    
     fig.update_layout(
-    legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=-0.1,
-        xanchor="center",
-        x=0.5
-    ),
-    title="Player Comparison"
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.1,
+            xanchor="center",
+            x=0.5
+        ),
+        legend_font_color="white"    
     )
+
     st.plotly_chart(fig, theme="streamlit", use_container_width = False)
 
 
@@ -120,7 +105,6 @@ USG_PCT:	Usage Rate is defined as the percentage of team plays used by a player 
 
 
 """)
-df2=pd.read_csv('EYBL.csv')
 if st.button("AI Analysis"):
-    description = get_dataframe_description(df2, prompt)
+    description = get_dataframe_description(event_dataframe, prompt)
     st.write(description)

@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
 import openai
-import json
 from openai import OpenAI
 from utils import *
+
 st.set_page_config(
     page_title="Cerebro Event Analyzer",
     page_icon="🏀",
