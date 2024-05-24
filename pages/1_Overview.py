@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 from utils import get_dataframe_description
 from utils import *
+
 # Create the DataFrame
 st.set_page_config(
     page_title="Cerebro Event Analyzer",
@@ -73,9 +74,6 @@ df2 = pd.read_csv("EYBL.csv")
 df2 = df2.nlargest(20, 'C-RAM')[['PLAYER', 'C-RAM']]
 #plot_bar_chart(df2)    
 
-
-
-
 # Layout for table and pie chart
 left_column, right_column = st.columns([1, .6])
 with left_column:
@@ -97,9 +95,6 @@ with right_column:
     plt.setp(texts, weight="bold")
     ax.axis('equal')  # Equal aspect ratio ensures the pie chart is circular.
     st.pyplot(fig)
-
-
-
 
 prompt = (f"""
 You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. The tournament has 323 players across 32 different teams with average performers scoring {ppg} points per game, average field goal percentage of {fg_pct} percent, average RAM (which is a proprietary metric showing individual game performance) of {ram} and C_RAM (cumulative ram) of {c_ram}. Can you take this table and describe the top players performances relative to the averages

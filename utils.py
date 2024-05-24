@@ -31,6 +31,9 @@ def get_dataframe_description(dataframe: pd.DataFrame, prompt: str) -> str:
 url_data = (r'https://raw.githubusercontent.com/cerebrosportsdev/livedoc/main/EYBL.csv')
 
 eybl=pd.read_csv(url_data)
+# conn = st.experimental_connection("snowpark")
+# sql = ""
+# eybl=conn.query(sql)
 ppg=eybl['PTS/G'].mean()
 ppg = round(ppg,2)
 

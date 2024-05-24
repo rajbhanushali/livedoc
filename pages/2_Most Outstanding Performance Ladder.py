@@ -5,15 +5,16 @@ from utils import get_dataframe_description
 import plotly.express as px
 import streamlit.components.v1 as components
 
+print("Running Most Outstanding")
 
 # Create the DataFrame
 st.set_page_config(
     page_title="Cerebro Event Analyzer",
     page_icon="🏀",
     layout="wide",
-    initial_sidebar_state="expanded",
-    
+    initial_sidebar_state="expanded"
 )
+
 data = {
     
     'PLAYER': [

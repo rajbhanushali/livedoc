@@ -1,11 +1,12 @@
-import pandas as pd
 import email
-import streamlit as st
 import io
-import numpy as np
-from streamlit_extras.app_logo import add_logo
-from utils import *
 
+import numpy as np
+import pandas as pd
+import streamlit as st
+from streamlit_extras.app_logo import add_logo
+
+from utils import *
 
 st.set_page_config(
     page_title="Cerebro Event Analyzer",
