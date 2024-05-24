@@ -13,9 +13,9 @@ st.set_page_config(
 
 
 # Replace with your OpenAI API key
-openai.api_key = st.secrets.OPENAI_API_KEY
+openai.api_key = st.secrets.CHAT_COMPLETION_KEY
 
-client = OpenAI(api_key=st.secrets.OPENAI_API_KEY)
+client = OpenAI(api_key=st.secrets.CHAT_COMPLETION_KEY)
 
 def get_dataframe_description(dataframe: pd.DataFrame, prompt: str) -> str:
     # Convert the DataFrame to CSV string

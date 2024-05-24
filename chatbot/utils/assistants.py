@@ -7,7 +7,7 @@ import re
 from openai import OpenAI
 from chatbot.utils.helper import update_session_state_cost
 
-client = OpenAI(api_key=st.secrets.OPENAI_API_KEY)
+client = OpenAI(api_key=st.secrets.CHATBOT_KEY)
 
 def create_thread():  
     thread = client.beta.threads.create()

@@ -7,9 +7,9 @@ import altair as alt
 
 def get_dataframe_description(dataframe: pd.DataFrame, prompt: str) -> str:
     # Convert the DataFrame to CSV string
-    openai.api_key = st.secrets.OPENAI_API_KEY
+    openai.api_key = st.secrets.CHAT_COMPLETION_KEY
 
-    client = OpenAI(api_key=st.secrets.OPENAI_API_KEY)
+    client = OpenAI(api_key=st.secrets.CHAT_COMPLETION_KEY)
     dataframe_csv = dataframe.to_csv(index=False)
     
     # Prepare the message for the ChatGPT API
