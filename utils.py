@@ -18,16 +18,20 @@ def get_dataframe_description(dataframe: pd.DataFrame, prompt: str) -> str:
         {"role": "user", "content": f"{prompt}\n\nHere is the data:\n{dataframe_csv}"}
     ]
     
-    # Send the request to the ChatGPT API
-    response = client.chat.completions.create(
+    
+    response = ""
+    resp_container = st.empty()
+    for delta in client.chat.completions.create(
         model="gpt-4o",  # Ensure you're using a model available in the new API
         messages=messages,
         stream=True
-    )
+    ):
+      if delta.choices:
+        response += delta.choices[0].delta.content
+        resp_container.markdown(response)
     
     # Extract and return the description from the response
-    description = response.choices[0].message.content
-    return description
+    return response
 
 
 url_data = (r'https://raw.githubusercontent.com/cerebrosportsdev/livedoc/main/EYBL.csv')
