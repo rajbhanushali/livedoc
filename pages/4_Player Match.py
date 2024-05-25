@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import call_gpt_and_stream_response, render_table
+from utils import render_player_match_ai_button, render_table
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
 
@@ -58,8 +58,9 @@ with col1:
 with col2:
     player2 = st.selectbox('Select Player 2', event_dataframe['PLAYER'], index=1)
 
-# Button to confirm selection
-if st.button('Confirm Selection'):
-    st.write(f'You selected: {player1} and {player2}')
-    selected_players_averages = event_dataframe[event_dataframe['PLAYER'].isin([player1, player2])]
-    description = call_gpt_and_stream_response(selected_players_averages, prompt)
+render_player_match_ai_button(event_dataframe, player1, player2, prompt)
+# # Button to confirm selection
+# if st.button('Confirm Selection'):
+#     st.write(f'You selected: {player1} and {player2}')
+#     selected_players_averages = event_dataframe[event_dataframe['PLAYER'].isin([player1, player2])]
+#     description = call_gpt_and_stream_response(selected_players_averages, player1, player2, prompt)

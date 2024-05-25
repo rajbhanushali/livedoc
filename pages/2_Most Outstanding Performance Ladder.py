@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 from streamlit_extras.app_logo import add_logo
 
-from utils import call_gpt_and_stream_response, render_table
+from utils import render_table, render_ai_button
 from sql_queries import get_table_from_snowflake
 
 st.set_page_config(
@@ -75,11 +75,6 @@ with col_radar:
 
     st.plotly_chart(fig, theme="streamlit", use_container_width = False)
 
-
-
-
-#ig.update_layout(paper_bgcolor="#2c2f36")
-
 # Description at the bottom of the page
 
 prompt = ("""
@@ -102,9 +97,5 @@ ATR:	AROUND THE RIM (ATR) is comprised of the traditional around the basket indi
 DSI:	DEFENSIVE STATISTICAL IMPACT (DSI) is an all-in-one defensive metric that focuses on events creation - combining possession-winning actions (steals, blocks, offensive rebounds) against defensive efficiency (fouls) to act as a proxy for reactive athleticism and feel for the game within scheme expectations. Rather than a definitive ranking of the best defender, DSI is a demonstration of the intersection of box score defensive numbers and the systems of defense. Adjudicating the role of the individual player within a defense is difficult, as there will be different systems that generate more events, that push events into certain positions, that will depress foul totals, etc. By comparing the DSI of similar players within the same or similar systems, there can be a strong sight read on individual defensive acumen and impact. When defining if a player is a good "statistical defender" or not, use this metric
 USG_PCT:	Usage Rate is defined as the percentage of team plays used by a player when they are on the floor. Its important because it indicates how large of a role a player has within his teams offense, which means how many opportunities hell have to score or contribute. High usage comes with high expecations for performance (the RAM and C_RAM for a player with a high Usage should also be high, to indicate efficient use of touches).
 
-
-
-
 """)
-if st.button("AI Analysis"):
-    description = call_gpt_and_stream_response(event_dataframe, prompt)
+render_ai_button(event_dataframe, prompt)

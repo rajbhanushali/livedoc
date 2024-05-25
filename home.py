@@ -44,11 +44,11 @@ df = pd.DataFrame({
 
 # Sidebar dropdown
 selected_option = st.sidebar.selectbox(
-    "Select an Option",
+    "**Select an Event**",
     df['Options']
 )
 
-add_logo("assets/cerebro_logo.png", height = 210)
+add_logo("assets/cerebro_logo.png", height = 290)
 
 # Step 4: Add a button for confirmation
 if st.sidebar.button('Confirm Selection') and selected_option != "Select Option":

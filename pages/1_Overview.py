@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import call_gpt_and_stream_response, plot_bar_chart, plot_pie_chart
+from utils import plot_bar_chart, plot_pie_chart, render_ai_button
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
 
@@ -61,5 +61,5 @@ USG_PCT:	Usage Rate is defined as the percentage of team plays used by a player 
 
 
 """)
-if st.button("AI Analysis"):
-    description = call_gpt_and_stream_response(event_dataframe, prompt)
+
+render_ai_button(event_dataframe, prompt)

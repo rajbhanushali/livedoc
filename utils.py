@@ -123,3 +123,40 @@ def render_table(event_dataframe):
       width='100%',
       allow_unsafe_jscode=True
   )
+
+
+def render_ai_button(dataframe, prompt):
+  # Custom CSS to center the button
+  st.markdown("""
+    <style>
+    .stButton > button {
+        display: block;
+        margin: 0 auto;
+        padding: 10px 20px;  /* Adjust padding */
+        width: 200px;  /* Adjust width */
+        height: 60px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+  # Center the button using the custom CSS
+  if st.button("Get AI Analysis"):
+    call_gpt_and_stream_response(dataframe, prompt)
+
+def render_player_match_ai_button(event_dataframe, player1, player2, prompt):
+  st.markdown("""
+    <style>
+    .stButton > button {
+        display: block;
+        margin: 0 auto;
+        padding: 10px 20px;  /* Adjust padding */
+        width: 200px;  /* Adjust width */
+        height: 60px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+  if st.button('Confirm Selection'):
+    st.write(f'You selected: {player1} and {player2}')
+    selected_players_averages = event_dataframe[event_dataframe['PLAYER'].isin([player1, player2])]
+    call_gpt_and_stream_response(selected_players_averages, prompt)
