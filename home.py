@@ -12,9 +12,13 @@ st.set_page_config(
     
 )
 
+add_logo("assets/cerebro_logo.png", height = 290)
+
+user_already_selected = False
 if "selected_event" not in st.session_state:
     st.session_state.selected_event = ""
-
+else:
+    user_already_selected = True
 
 st.markdown(
     """
@@ -42,18 +46,17 @@ df = pd.DataFrame({
     'Options': ["Select Option","Nike EYBL 17U - 2023", "Nike EYBL 17U - 2021", "Nike EYBL 17U - 2019", "Nike Hoop Summit - 2022", "Augusta Peach Jam - 2022"]
 })
 
-# Sidebar dropdown
-selected_option = st.sidebar.selectbox(
+selected_option = st.selectbox(
     "**Select an Event**",
     df['Options']
 )
 
-add_logo("assets/cerebro_logo.png", height = 290)
+selection_box = st.empty()
+if user_already_selected:
+    selection_box.success(f"You have selected: {st.session_state.selected_event}")
 
 # Step 4: Add a button for confirmation
-if st.sidebar.button('Confirm Selection') and selected_option != "Select Option":
+if st.button('Confirm Selection') and selected_option != "Select Option":
     # Step 5: Store the dropdown response in the session state upon button click.
     st.session_state.selected_event = selected_option
-    st.sidebar.success(f"You have selected: {selected_option}")
-
-# Displaying the selected option outside of the sidebar, if any selection is made
+    selection_box.success(f"You have selected: {selected_option}")
