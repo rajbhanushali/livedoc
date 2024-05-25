@@ -23,9 +23,11 @@ else:
 st.markdown(
     """
     ## Welcome to the Cerebro Event Analyzer 🏀
-    Use this portal to quickly identify top performers in youth basketball events:
+    Use this portal to quickly identify top performers in youth basketball events.
     
-    *👈 To begin, select an event from the sidebar.*
+    To begin, select an event from below, \n
+    Then find all the info you need from that event \n
+    👈 on that side menu
     
     """
 )

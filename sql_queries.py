@@ -33,6 +33,7 @@ def get_sql_query_from_event(event_name):
         sql_query = f"""
             SELECT 
                 PLAYER,
+                COUNT(*) AS GAMES_PLAYED,
                 AVG(RAM) AS RAM,
                 AVG(C_RAM) AS C_RAM,
                 AVG(PSP) AS PSP,
