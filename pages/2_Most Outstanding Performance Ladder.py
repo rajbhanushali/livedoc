@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.express as px
 from streamlit_extras.app_logo import add_logo
 
-from utils import get_dataframe_description, color_cram_value
+from utils import call_gpt_and_stream_response, render_table
 from sql_queries import get_table_from_snowflake
 
 st.set_page_config(
@@ -34,7 +34,8 @@ with col_data:
         options=top_10_cram["PLAYER"].unique(),
         default=top_10_cram["PLAYER"].iloc[:2]
     )
-    st.dataframe(top_10_cram.style.applymap(color_cram_value, subset=['C_RAM']),hide_index=True)
+
+    render_table(top_10_cram)
 
 # Create the bar chart and display it in the second column
 with col_radar:
@@ -106,5 +107,4 @@ USG_PCT:	Usage Rate is defined as the percentage of team plays used by a player 
 
 """)
 if st.button("AI Analysis"):
-    description = get_dataframe_description(event_dataframe, prompt)
-    st.write(description)
+    description = call_gpt_and_stream_response(event_dataframe, prompt)

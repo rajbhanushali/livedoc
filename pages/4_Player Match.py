@@ -1,6 +1,5 @@
 import streamlit as st
-from utils import get_dataframe_description
-from utils import color_cram_value
+from utils import call_gpt_and_stream_response, render_table
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
 
@@ -48,7 +47,7 @@ event_dataframe = event_dataframe.sort_values(by="C_RAM", ascending=False)
 # Display the DataFrame in the first column with color coding
 
 st.write("Player Rankings")
-st.dataframe(event_dataframe.style.applymap(color_cram_value, subset=['C_RAM']))
+render_table(event_dataframe)
 
 # Create the bar chart and display it in the second column
 col1, col2 = st.columns(2)
@@ -63,5 +62,4 @@ with col2:
 if st.button('Confirm Selection'):
     st.write(f'You selected: {player1} and {player2}')
     selected_players_averages = event_dataframe[event_dataframe['PLAYER'].isin([player1, player2])]
-    description = get_dataframe_description(selected_players_averages, prompt)
-    st.write(description)
+    description = call_gpt_and_stream_response(selected_players_averages, prompt)

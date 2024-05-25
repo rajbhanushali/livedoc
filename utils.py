@@ -4,8 +4,9 @@ import openai
 import plotly.express as px
 from openai import OpenAI
 import altair as alt
+from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
 
-def get_dataframe_description(dataframe: pd.DataFrame, prompt: str) -> str:
+def call_gpt_and_stream_response(dataframe: pd.DataFrame, prompt: str) -> str:
     # Convert the DataFrame to CSV string
     openai.api_key = st.secrets.CHAT_COMPLETION_KEY
 
@@ -18,75 +19,20 @@ def get_dataframe_description(dataframe: pd.DataFrame, prompt: str) -> str:
         {"role": "user", "content": f"{prompt}\n\nHere is the data:\n{dataframe_csv}"}
     ]
     
-    
-    response = ""
-    resp_container = st.empty()
-    for delta in client.chat.completions.create(
-        model="gpt-4o",  # Ensure you're using a model available in the new API
-        messages=messages,
-        stream=True
-    ):
-      if delta.choices:
-        response += delta.choices[0].delta.content
-        resp_container.markdown(response)
+    with st.chat_message("assistant"):
+      response = ""
+      resp_container = st.empty()
+      for delta in client.chat.completions.create(
+          model="gpt-4o",  # Ensure you're using a model available in the new API
+          messages=messages,
+          stream=True
+      ):
+        if delta.choices and delta.choices[0].delta.content:
+          response += delta.choices[0].delta.content
+          resp_container.markdown(response)
     
     # Extract and return the description from the response
     return response
-
-
-url_data = (r'https://raw.githubusercontent.com/cerebrosportsdev/livedoc/main/EYBL.csv')
-
-eybl=pd.read_csv(url_data)
-# conn = st.experimental_connection("snowpark")
-# sql = ""
-# eybl=conn.query(sql)
-ppg=eybl['PTS/G'].mean()
-ppg = round(ppg,2)
-
-eybl['FG%'] = eybl['FG%'].str.rstrip('%').astype(float)
-fg_pct=eybl['FG%'].mean()
-fg_pct= round(fg_pct,2)
-
-ram = eybl['RAM'].mean()
-ram = round(ram,2)
-
-c_ram=eybl['C-RAM'].mean()
-c_ram=round(c_ram,2)
-
-gold = (eybl['C-RAM'] > 10).sum()
-silver = ((eybl['C-RAM'] > 8.5) & (eybl['C-RAM'] < 10)).sum()
-bronze = ((eybl['C-RAM'] > 7) & (eybl['C-RAM'] < 8.5)).sum()
-
-
-# Custom HTML for the table
-table_html = """
-<table style='width:100%'>
-  <tr style='background-color: black; color: white;'>
-    <th>Tiers</th>
-    <th>C-RAM</th>
-    <th>#</th>
-    <th>Avg RAM</th>
-  </tr>
-  <tr style='background-color: #FFD700;'>
-    <td>Gold:</td>
-    <td>10+</td>
-    <td>6</td>
-    <td>1033</td>
-  </tr>
-  <tr style='background-color: #C0C0C0;'>  <!-- Adjusted Silver color to a lighter shade -->
-    <td>Silver:</td>
-    <td>8.5-10</td>
-    <td>13</td>
-    <td>747</td>
-  </tr>
-  <tr style='background-color: #CD7F32;'>
-    <td>Bronze:</td>
-    <td>7-8.5</td>
-    <td>45</td>
-    <td>635</td>
-  </tr>
-</table>
-"""
 
 def plot_bar_chart(dataframe):
     fig = px.bar(
@@ -94,7 +40,6 @@ def plot_bar_chart(dataframe):
         x="C_RAM",
         y="PLAYER",
         orientation='h',
-        title="Top Players by C-RAM Score",
         color='C_RAM',
         color_continuous_scale='viridis',
         labels={'C-RAM': 'C-RAM Score', 'Name': 'Player Name'},
@@ -142,3 +87,39 @@ def color_cram_value(val):
     else:
         color = 'transparent'
     return f'background-color: {color}'
+
+
+def render_table(event_dataframe):
+  cell_style_jscode = JsCode("""
+    function(params) {
+        if (params.value >= 10) {
+            return { 'backgroundColor': 'gold' };
+        } else if (params.value >= 8.5 && params.value < 10) {
+            return { 'backgroundColor': 'silver' };
+        } else if (params.value >= 7 && params.value < 8.5) {
+            return { 'backgroundColor': 'brown' };
+        } else {
+            return { 'backgroundColor': 'transparent' };
+        }
+    }
+""")
+
+  gb = GridOptionsBuilder.from_dataframe(event_dataframe)
+
+  # Apply custom cell styles using JS function for the 'C_RAM' column
+  gb.configure_column('C_RAM', cellStyle=cell_style_jscode)
+  gridOptions = gb.build()
+
+  # Calculate dynamic height
+  num_rows = len(event_dataframe)
+  row_height = 25
+  dynamic_height = min(max(200, 56 + num_rows * row_height), 600)
+
+  # Display using AgGrid with custom styling
+  AgGrid(
+      event_dataframe,
+      gridOptions=gridOptions,
+      height=dynamic_height,
+      width='100%',
+      allow_unsafe_jscode=True
+  )

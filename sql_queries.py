@@ -2,14 +2,15 @@ import streamlit as st
 import pandas as pd
 
 def get_table_from_snowflake(selected_event):
-  conn = st.experimental_connection("snowpark")
-  table_response = pd.DataFrame()
+    conn = st.experimental_connection("snowpark")
+    table_response = pd.DataFrame()
 
-  if selected_event:
-    sql = get_sql_query_from_event(selected_event)
-    table_response = conn.query(sql)
-    
-  return table_response
+    if selected_event:
+        sql = get_sql_query_from_event(selected_event)
+        table_response = conn.query(sql)
+        table_response = table_response.round(2)
+
+    return table_response
 
 def get_sql_query_from_event(event_name):
     if event_name == "Nike EYBL 17U - 2023":

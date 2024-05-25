@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import get_dataframe_description, plot_bar_chart, plot_pie_chart
+from utils import call_gpt_and_stream_response, plot_bar_chart, plot_pie_chart
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
 
@@ -22,19 +22,23 @@ event_dataframe = get_table_from_snowflake(st.session_state.selected_event)
 
 total_players = event_dataframe["PLAYER"].nunique()
 avg_ram = event_dataframe['RAM'].mean()
+avg_cram = event_dataframe['C_RAM'].mean()
 
 # Display total players and average RAM using columns
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 col1.metric("Total Players", total_players)
 col2.metric("Average RAM", f"{avg_ram:.2f}")
+col3.metric("Average C_RAM", f"{avg_cram:.2f}")
 
 top_10_cram = event_dataframe.nlargest(10, 'C_RAM')[['PLAYER', 'C_RAM']]
 
 # Layout for table and pie chart
 left_column, right_column = st.columns([1, 1])
 with left_column:
+    st.markdown("### Top Players by C-RAM Score")
     plot_bar_chart(top_10_cram)
 with right_column:
+    st.markdown("### Event Breakdown by C-RAM")
     plot_pie_chart(event_dataframe)
 
 prompt = (f"""
@@ -58,5 +62,4 @@ USG_PCT:	Usage Rate is defined as the percentage of team plays used by a player 
 
 """)
 if st.button("AI Analysis"):
-    description = get_dataframe_description(event_dataframe, prompt)
-    st.write(description)
+    description = call_gpt_and_stream_response(event_dataframe, prompt)

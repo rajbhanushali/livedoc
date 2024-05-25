@@ -1,6 +1,5 @@
-import pandas as pd
 import streamlit as st
-from utils import color_cram_value
+from utils import render_table
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
 
@@ -20,4 +19,4 @@ st.title(f"Full Leaderboard for {st.session_state.selected_event}")
 
 event_dataframe = get_table_from_snowflake(st.session_state.selected_event)
 
-st.dataframe(event_dataframe.style.applymap(color_cram_value, subset=['C_RAM']),width=10000, height=768)
+render_table(event_dataframe)
