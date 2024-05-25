@@ -42,12 +42,12 @@ def plot_bar_chart(dataframe):
         orientation='h',
         color='C_RAM',
         color_continuous_scale='viridis',
-        labels={'C-RAM': 'C-RAM Score', 'Name': 'Player Name'},
         template='plotly_white'
     )
     fig.update_layout(
-        title_font_size=24,
+        xaxis_title='C_RAM',
         xaxis_title_font_size=18,
+        yaxis_title='PLAYER',
         yaxis_title_font_size=18,
         yaxis={'categoryorder': 'total ascending'}
     )
