@@ -10,7 +10,8 @@ from chatbot.utils.assistants import create_message_in_thread, create_run, gener
 st.set_page_config(
     page_title="CerebroAI",
     page_icon="🏀",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 LOGIN_SECRET = st.secrets.LOGIN_PASSWORD
@@ -28,21 +29,24 @@ st.session_state = initialize_login_session(st.session_state)
 st.title("🔍 CerebroAI")
 st.caption("Sift our extensive database of basketball stats.")
 
-# Handle Login
-login_attempt_input = st.text_input("Enter Password", type = 'password', placeholder=password_placeholder)
-if login_attempt_input and st.session_state.login != LOGIN_SECRET:
-    if login_attempt_input == LOGIN_SECRET:
-        st.session_state.login = login_attempt_input
-        st.experimental_rerun()
-    else:
-        st.error("Incorrect Password. Please Try Again")
-        st.caption("*Hint: You get no hints*")
+# Commented out password field - Login is temporarily open
 
-# Following LOGIN_SUCCESS
-if st.session_state.login == LOGIN_SECRET:
+# login_attempt_input = st.text_input("Enter Password", type = 'password', placeholder=password_placeholder)
+# if login_attempt_input and st.session_state.login != LOGIN_SECRET:
+#     if login_attempt_input == LOGIN_SECRET:
+#         st.session_state.login = login_attempt_input
+#         st.experimental_rerun()
+#     else:
+#         st.error("Incorrect Password. Please Try Again")
+#         st.caption("*Hint: You get no hints*")
+
+if st.button('Get Started'):
+    st.session_state.begin = True
+
+if st.session_state.begin:
     # Initialize session state for OpenAI Assistants Thread(s)
     st.session_state = initialize_thread_session(st.session_state)
-    
+
     # Refresh Button
     if st.button("Refresh"):
         conn.reset()
@@ -73,11 +77,11 @@ if st.session_state.login == LOGIN_SECRET:
 
     # rerender the new old messages when user submits a query, from helper file
     show_existing_chat_messages(st.session_state.messages)   
-    
+
     if st.session_state.loading:
         st.session_state.loading = False
         loading_popup.empty()
-    
+
     # If last message is from the user, we need to generate a new sql response
     user_submitted_query = st.session_state.submitted and st.session_state.messages[-1]["role"] == "user"
     if user_submitted_query:

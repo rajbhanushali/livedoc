@@ -8,7 +8,7 @@ st.set_page_config(
     page_title="Cerebro Event Analyzer",
     page_icon="🏀",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 
@@ -67,9 +67,9 @@ if st.button("Get Description"):
 else:
 
     st.write("**Example prompt:**")
-    st.write(f"""
+    st.caption(f"""
 
-    You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. The tournament has 323 players across 32 different teams with average performers scoring {ppg} points per game, average field goal percentage of {fg_pct} percent, average RAM (which is a proprietary metric showing individual game performance) of {ram} and C_RAM (cumulative ram) of {c_ram}. Can you take this table and describe the top players performances relative to the averages
+    You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. The tournament has 323 players across 32 different teams with average performers scoring x points per game, average field goal percentage of y percent, average RAM (which is a proprietary metric showing individual game performance) of r RAM and C_RAM (cumulative ram) of c c_ram. Can you take this table and describe the top players performances relative to the averages
 
     Here is an example of a "good description": This event contained 323 players across X teams, with players averaging X ppg, X FG%, and X RAM. The most notable performance in the event came from Player X (this will be calculated based on highest game RAM, played at least 24 min) who had statistics of X, Y, and Z (show the best stats of the player here, traditional not cerebro metrics). Team Y had the most wins in the event, with their leading player X averaging A, B and C. 
 

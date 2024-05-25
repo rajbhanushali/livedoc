@@ -81,7 +81,7 @@ def data_viz_assistant_response(user_query, table_response, thread_id, assistant
 
     table_columns = table_response.columns.tolist()
 
-    input_text = f"User Query: {user_query}. \n Table Data: \n{table_response} \n Columns: {table_columns}"
+    input_text = f"User Query: {user_query}. \n Table Data: \n{table_response.to_json(orient='records', lines=True)} \n Columns: {table_columns}"
     
     message_id = create_message_in_thread(thread_id, input_text)
 

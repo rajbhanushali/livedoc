@@ -108,8 +108,9 @@ def plot_dataviz(data_viz_metadata, table_data):
 
             player_col = properties["axes"][0]
             categories = properties["axes"][1:]
+            table_data_grouped = table_data.groupby(player_col).mean().reset_index()
 
-            table_data_long = pd.melt(table_data, id_vars=[player_col], 
+            table_data_long = pd.melt(table_data_grouped, id_vars=[player_col], 
                                       value_vars=categories, 
                                       var_name='Category', 
                                       value_name='Value')

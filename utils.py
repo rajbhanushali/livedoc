@@ -49,7 +49,9 @@ def plot_bar_chart(dataframe):
         xaxis_title_font_size=18,
         yaxis_title='PLAYER',
         yaxis_title_font_size=18,
-        yaxis={'categoryorder': 'total ascending'}
+        yaxis={'categoryorder': 'total ascending'},
+        margin=dict(l=20, r=20, t=30, b=20),  # Adjust margins
+        autosize=True  # Make the chart auto-size
     )
     st.plotly_chart(fig)
 
@@ -74,7 +76,7 @@ def plot_pie_chart(event_dataframe):
   )
 
   arc = base.mark_arc(innerRadius=50, outerRadius=150, stroke="#fff")
-
+  
   st.altair_chart(arc, use_container_width=True)
 
 def color_cram_value(val):

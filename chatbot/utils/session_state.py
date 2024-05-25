@@ -10,6 +10,8 @@ def initialize_login_session(session_state):
         session_state.loading = False
     if "thread_cost" not in session_state:
         session_state.thread_cost = 0
+    if "begin" not in session_state:
+        session_state.begin = False
     
     return session_state
 

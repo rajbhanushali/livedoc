@@ -7,18 +7,18 @@ st.set_page_config(
     page_title="CerebroEvent - Overview",
     page_icon="🏀",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed"
 )
 add_logo("assets/cerebro_logo.png", height = 300)
 
-if "selected_event" not in st.session_state or st.session_state.selected_event == "":
+if "selected_event" not in st.session_state or not st.session_state.selected_event or "selected_year" not in st.session_state:
     st.error(" ### Please return to Home and select an event ")
     st.stop()
 
 # Title of the page
 st.title(f"Overview of {st.session_state.selected_event}")
 
-event_dataframe = get_table_from_snowflake(st.session_state.selected_event)
+event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
 
 total_players = event_dataframe["PLAYER"].nunique()
 avg_ram = event_dataframe['RAM'].mean()

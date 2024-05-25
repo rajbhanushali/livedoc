@@ -9,17 +9,17 @@ st.set_page_config(
     page_title="CerebroEvent - MOP Ladder",
     page_icon="🏀",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 add_logo("assets/cerebro_logo.png", height = 300)
 
-if "selected_event" not in st.session_state or st.session_state.selected_event == "":
+if "selected_event" not in st.session_state or not st.session_state.selected_event or "selected_year" not in st.session_state:
     st.error(" ### Please return to Home and select an event ")
     st.stop()
 
 st.title(f"Most Outstanding Performance Ladder for {st.session_state.selected_event}")
 
-event_dataframe = get_table_from_snowflake(st.session_state.selected_event)
+event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
 
 top_10_cram = event_dataframe.nlargest(10, 'C_RAM')
 
