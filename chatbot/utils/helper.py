@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from chatbot.data_visuals import create_and_display_chart
 from chatbot.assets.floating_box import get_thread_cost_string
 
@@ -12,9 +13,14 @@ def show_existing_chat_messages(messages):
             
             if "results" in message:
                 with st.chat_message(message["role"]):    
-                    st.dataframe(message["results"])
-                    if message["key"] == "sql_response":
-                        create_and_display_chart(message)
+
+                    if isinstance(message["results"], pd.DataFrame):
+                        st.dataframe(message["results"])
+                        if message["key"] == "sql_response":
+                            create_and_display_chart(message)
+
+                    elif isinstance(message["results"], str):
+                        st.markdown(message["results"])
             
             if message["key"] == 'welcome_message':
                 with st.chat_message(message["role"]):

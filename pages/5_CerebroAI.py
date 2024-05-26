@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from chatbot.assets.loading_popup import loading_popup_str
 from chatbot.prompting.sql_prompts import NO_RESPONSE_TEXT
 from chatbot.prompting.welcome_message import WELCOME_MESSAGE_PROMPT
@@ -109,15 +110,17 @@ if st.session_state.begin:
             message["results"] = table_response
             message["key"] = "sql_response"
 
-            if not table_response.empty:
+            if isinstance(table_response, pd.DataFrame) and not table_response.empty:
                 st.caption("Here's whats I think you were looking for:")
                 st.dataframe(table_response)
 
                 message["chart_data"] = data_viz_assistant_response(st.session_state.user_query, table_response, st.session_state.dataviz_thread_id, dataviz_assistant_id)
-                
-                # if message["chart_data"] and "description" in message["chart_data"]:
-                #     st.markdown(message["chart_data"]["description"])
-                    
+
+                if "description" in message["chart_data"]:
+                    st.markdown(message["chart_data"]["description"])
+
+            elif isinstance(table_response, str):
+                st.markdown(table_response)
             else:
                 st.markdown(NO_RESPONSE_TEXT)
 

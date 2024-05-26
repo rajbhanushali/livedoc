@@ -27,6 +27,9 @@ def create_and_display_chart(message_object):
     if not chart_data:
         return 
 
+    if "description" in chart_data:
+        st.markdown(chart_data["description"])
+
     if chart_data.get('requires_visual') == False:
         st.text("No relevant visual generated. Ask me another question!")
         return
@@ -136,7 +139,6 @@ def plot_dataviz(data_viz_metadata, table_data):
         else:
             st.code("Plot type was not understood. Please try again")
 
-        st.markdown(description)
         # return chart data to store in messages
         return {
             "requires_visual": requires_visual,

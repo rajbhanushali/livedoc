@@ -46,10 +46,16 @@ def create_run(thread_id, assistant_id):
 def generate_table_response_from_run(conn, thread_id):
 
     all_messages = retrieve_all_message_in_thread(thread_id)
-    assistant_sql_response = all_messages[-1]["content"]
+    most_recent_message = all_messages[-1]["content"]
 
-    return run_conn_query_sql(conn, assistant_sql_response)
+    sql_assistant_json = json.loads(most_recent_message)
 
+    if "sql" in sql_assistant_json:
+        sql_query_from_assistant = sql_assistant_json["sql"]
+
+        return run_conn_query_sql(conn, sql_query_from_assistant)
+    elif "response" in sql_assistant_json:
+        return sql_assistant_json["response"]
 
 def run_conn_query_sql(conn, sql_query):
     sql_match = re.search(r"```sql\n(.*)\n```", sql_query, re.DOTALL)
@@ -58,7 +64,7 @@ def run_conn_query_sql(conn, sql_query):
     if sql_match:
         sql = sql_match.group(1)
         try:
-            st.markdown(f"```sql\n{sql}\n```")
+            # st.markdown(f"```sql\n{sql}\n```")
             table_response = conn.query(sql)
         except Exception as e:
             st.error(f'Could not reach snowflake database due to error: {e}')
@@ -66,7 +72,7 @@ def run_conn_query_sql(conn, sql_query):
 
     else:
         try:
-            st.markdown(sql_query)
+            # st.markdown(sql_query)
             table_response = conn.query(sql_query)
         except Exception as e:
             st.error(f'Could not reach snowflake database due to error: {e}')
@@ -78,6 +84,9 @@ def run_conn_query_sql(conn, sql_query):
     return table_response
 
 def data_viz_assistant_response(user_query, table_response, thread_id, assistant_id):
+    
+    loading_placeholder = st.empty()
+    loading_placeholder.caption("Let me try to give you more insight...")
 
     table_columns = table_response.columns.tolist()
 
@@ -92,11 +101,12 @@ def data_viz_assistant_response(user_query, table_response, thread_id, assistant
     most_recent_message = all_messages[-1]["content"]
     data_viz_response = json.loads(most_recent_message)
 
+    loading_placeholder.empty()  # Clears the text
     if data_viz_response:
         return plot_dataviz(data_viz_response, table_response)
     else:
         print("No JSON found in response.")
-        return {"requires_visual" : False}
+        return data_viz_response
     
 # How to use custom functions
 # run_obj = client.beta.threads.runs.retrieve(
