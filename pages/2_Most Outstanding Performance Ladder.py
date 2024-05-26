@@ -4,6 +4,7 @@ from streamlit_extras.app_logo import add_logo
 
 from utils import render_table, render_ai_button
 from sql_queries import get_table_from_snowflake
+from static_prompts import mop_ladder_prompt
 
 st.set_page_config(
     page_title="CerebroEvent - MOP Ladder",
@@ -76,29 +77,5 @@ with col_radar:
     st.plotly_chart(fig, theme="streamlit", use_container_width = False)
 
 # Description at the bottom of the page
-
-mop_ladder_prompt = f"""
-You are a youth basketball analyst. The data in this table represents the top performers from an event. Analyze the top players' performances relative to these averages and the 5 metric suite (PSP, 3PE, FGS, ATR, DSI).
-
-Provide a summary highlighting:
-- Notable performances from players with the highest RAM and C_RAM scores.
-- Comparison of these players' stats to the average RAM and C_RAM.
-- Insights on their scoring, shooting, playmaking, around-the-rim skills, and defensive impact using the 5 metric suite.
-- Bold the player names in your response.
-
-For example:
-"The most notable performance came from **Player X** with a C_RAM score of 9.8, significantly above the average. **Player Y** also stood out with a PSP score of 85, indicating a strong scoring ability." Make it very detailed and include insights on each metric and each player. Focus on box score stats also like average points per game, rebounds, shooting percentage, etc.
-
-Here are descriptions of the key metrics:
-- **RAM**: Overall Evaluation Score, ranging from 0 to 1000+, balancing efficiency, volume, and per-minute impact.
-- **C-RAM**: Context Metric, comparing performance to the average, with scores from 0 to 10+, and medals for different performance levels.
-- **PSP**: Pure Scoring Prowess, blending scoring volume and efficiency.
-- **3PE**: 3-Point Efficiency, considering shooting volume and efficiency.
-- **FGS**: Floor General Skills, exploring passing efficiency and volume.
-- **ATR**: Around the Rim, indicators for big man play, including rebounds, blocks, and 2-point efficiency.
-- **DSI**: Defensive Statistical Impact, combining events creation and defensive efficiency.
-
-Use this information to generate a detailed analysis of the top players' performances. Focus on comparisons between the players and highlighting strengths in one where a different player has a weakness, etc.
-"""
 
 render_ai_button(top_10_cram, mop_ladder_prompt)

@@ -2,6 +2,7 @@ import streamlit as st
 from utils import plot_bar_chart, plot_pie_chart, render_ai_button
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
+from static_prompts import get_overview_prompt
 
 st.set_page_config(
     page_title="CerebroEvent - Overview",
@@ -41,28 +42,4 @@ with right_column:
     st.markdown("### Event Breakdown by C-RAM")
     plot_pie_chart(event_dataframe)
 
-overview_prompt = f"""
-You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. The tournament has {total_players} total players, with an average RAM score of {avg_ram:.2f} and an average C_RAM score of {avg_cram:.2f}. Analyze the top players' performances relative to these averages and the 5 metric suite (PSP, 3PE, FGS, ATR, DSI).
-
-Provide a summary highlighting:
-- Notable performances from players with the highest RAM and C_RAM scores.
-- Comparison of these players' stats to the average RAM and C_RAM.
-- Insights on their scoring, shooting, playmaking, around-the-rim skills, and defensive impact using the 5 metric suite.
-- Bold the player names in your response.
-
-For example:
-"This event contained {total_players} players with an average RAM score of {avg_ram:.2f} and an average C_RAM score of {avg_cram:.2f}. The most notable performance came from **Player X** with a C_RAM score of 9.8, significantly above the average. **Player Y** also stood out with a PSP score of 85, indicating a strong scoring ability."
-
-Here are descriptions of the key metrics:
-- **RAM**: Overall Evaluation Score, ranging from 0 to 1000+, balancing efficiency, volume, and per-minute impact.
-- **C-RAM**: Context Metric, comparing performance to the average, with scores from 0 to 10+, and medals for different performance levels.
-- **PSP**: Pure Scoring Prowess, blending scoring volume and efficiency.
-- **3PE**: 3-Point Efficiency, considering shooting volume and efficiency.
-- **FGS**: Floor General Skills, exploring passing efficiency and volume.
-- **ATR**: Around the Rim, indicators for big man play, including rebounds, blocks, and 2-point efficiency.
-- **DSI**: Defensive Statistical Impact, combining events creation and defensive efficiency.
-
-Use this information to generate a detailed analysis of the top players' performances, and easter-egg insights into interesting statistics from the event.
-"""
-
-render_ai_button(event_dataframe, overview_prompt)
+render_ai_button(event_dataframe, get_overview_prompt(total_players, avg_ram, avg_cram))

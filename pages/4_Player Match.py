@@ -2,6 +2,7 @@ import streamlit as st
 from utils import render_player_match_ai_button, render_table
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
+from static_prompts import get_player_match_prompt
 
 st.set_page_config(
     page_title="CerebroEvent - Player Match",
@@ -36,34 +37,9 @@ with col1:
 with col2:
     player2 = st.selectbox('Select Player 2', event_dataframe['PLAYER'], index=1)
 
-
-player_match_prompt = f"""
-You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. The tournament has 323 players across 32 different teams with average performers scoring X points per game, average field goal percentage of Y percent, average RAM (which is a proprietary metric showing individual game performance) of R and C_RAM (cumulative RAM) of C.
-
-Compare the performances of **{player1}** and **{player2}** both against each other and against the average performance metrics. Highlight their strengths and weaknesses using the 5 metric suite (PSP, 3PE, FGS, ATR, DSI), box score statistics, and other relevant metrics.
-
-Here are the key points to cover in your comparison:
-- Which player has better overall performance based on RAM and C_RAM?
-- Detailed comparison of their 5MS metrics (PSP, 3PE, FGS, ATR, DSI).
-- Insights into their scoring, shooting, playmaking, around-the-rim skills, and defensive impact.
-- Highlight any specific areas where one player excels over the other.
-- Suggest the type of team or playing style each player would fit better in.
-- Highlight their box score stats and where one outperformed the other.
-
-Descriptions of the key metrics:
-- **RAM**: Overall Evaluation Score, ranging from 0 to 1000+, balancing efficiency, volume, and per-minute impact.
-- **C-RAM**: Context Metric, comparing performance to the average, with scores from 0 to 10+, and medals for different performance levels.
-- **PSP**: Pure Scoring Prowess, blending scoring volume and efficiency.
-- **3PE**: 3-Point Efficiency, considering shooting volume and efficiency.
-- **FGS**: Floor General Skills, exploring passing efficiency and volume.
-- **ATR**: Around the Rim, indicators for big man play, including rebounds, blocks, and 2-point efficiency.
-- **DSI**: Defensive Statistical Impact, combining events creation and defensive efficiency.
-
-Please bold the player names in your response.
-"""
-
 # Use the selected players' averages for the analysis
 selected_players_averages = event_dataframe[event_dataframe['PLAYER'].isin([player1, player2])]
 
+player_match_prompt = get_player_match_prompt(player1, player2)
 # Render the AI button with the updated prompt
 render_player_match_ai_button(selected_players_averages, player1, player2, player_match_prompt)
