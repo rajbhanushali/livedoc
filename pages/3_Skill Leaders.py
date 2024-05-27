@@ -50,7 +50,7 @@ with col2:
     st.metric(f"DSI for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"DSI"].values[0],avg_dsi_delta)
 
 with col3:
-    st.write("#")
+    #st.write("#")
     st.metric(f"3PE for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"THREE_PE"].values[0],avg_3pe_delta)
     st.metric(f"ATR for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"ATR"].values[0],avg_atr_delta)
     st.metric(f"PSP for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"PSP"].values[0],avg_psp_delta)
