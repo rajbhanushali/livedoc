@@ -5,6 +5,7 @@ from streamlit_extras.app_logo import add_logo
 from static_prompts import get_overview_prompt, get_skill_leader_prompt
 import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
+from st_aggrid import ColumnsAutoSizeMode
 
 
 st.set_page_config(
