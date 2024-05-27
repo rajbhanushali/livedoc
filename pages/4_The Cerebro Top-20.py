@@ -54,12 +54,14 @@ for col in df.columns[1:]:  # Exclude the 'SELECT' column from styling
 gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren=True)
 gridOptions = gb.build()
 
-top_player = df.iloc[0,0]
-st.write(f"Here we see the top 20 players in the event with {top_player} leading the way")
+
 
 # Display the AgGrid table with highlighting
 grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed', columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
 selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
+
+top_player = df.iloc[0,1]
+st.write(f"Here we see the top 20 players in the event with {top_player} leading the way")
 
 # Get selected rows
 selected_rows = grid_response['selected_rows']
