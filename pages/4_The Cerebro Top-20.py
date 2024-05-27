@@ -17,6 +17,7 @@ st.set_page_config(
 add_logo("assets/cerebro_logo.png", height = 300)
 
 st.title(f"CEREBRO top 20 for {st.session_state.selected_event}")
+st.header("Select a player to learn more")
 
 event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
 df = event_dataframe.nlargest(20, "RAM")
@@ -53,6 +54,9 @@ for col in df.columns[1:]:  # Exclude the 'SELECT' column from styling
 gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren=True)
 gridOptions = gb.build()
 
+top_player = df.iloc[0,0]
+st.write(f"Here we see the top 20 players in the event with {top_player} leading the way")
+
 # Display the AgGrid table with highlighting
 grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed', columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
 selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
@@ -66,3 +70,4 @@ if not selected_rows_df.empty:
     st.write(selected_rows_df)
 else:
     st.write("No player selected")
+
