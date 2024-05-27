@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 def get_table_from_snowflake(selected_event, selected_year):
-    conn = st.experimental_connection("snowpark")
+    conn = st.connection("snowpark")
     table_response = pd.DataFrame()
 
     if selected_event and selected_year:

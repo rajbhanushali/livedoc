@@ -72,3 +72,14 @@ def get_player_match_prompt(player1, player2):
 
         Please bold the player names in your response.
     """
+
+def get_skill_leader_prompt(skill,event):
+    return f"""
+    
+    You are a youth basketball analyst. The data in this table represents the top performers from the {event} tournament. The tournament has 323 players across 32 different teams with average performers scoring X points per game, average field goal percentage of Y percent, average RAM (which is a proprietary metric showing individual game performance) of R and C_RAM (cumulative RAM) of C.
+
+    I want you to take the event and based on the column {skill} generate a summary similar to the one below for the leaders of that stat:
+    
+    Cayden Boozer led the event in FGS, a metric showcasing Floor General Skills. He scored a 94 which was X% better than the average, and averaged 9 assists per game, 1.6 TOs per game, and 1.4 STL/G. He accounted for X% of his teams overall assists, and was the leader in overall assists for the event with Z assists. Trailing him in our FGS leaderboard is Christian Jeffrey from NH Lightining, with a FGS score of 85 and averages of 5.5 assists, 0.5 turnovers and half a steal per game. His key outlier stat is X (Please find one outlier stat for him).
+
+    """

@@ -38,7 +38,7 @@ event_data_df = get_event_data_df()
 
 # Event selection
 event_options = event_data_df['Event'].unique().tolist()
-selected_event = st.selectbox("Select an Event", ["Select Option"] + event_options)
+selected_event = st.selectbox("Select an Event", ["Nike EYBL (16U)"] + event_options)
 
 # Step 4: Add a button for confirmation
 if selected_event != "Select Option":
@@ -46,7 +46,7 @@ if selected_event != "Select Option":
 
     # Year selection based on selected event
     year_options = event_data_df[event_data_df['Event'] == st.session_state.selected_event]['Year'].tolist()
-    selected_year = st.selectbox("Select a Year", ["Select Option"] + year_options)
+    selected_year = st.selectbox("Select a Year", ["2021"] + year_options)
 
     if selected_year != "Select Option":
         st.session_state.selected_year = selected_year

@@ -10,7 +10,9 @@ def call_gpt_and_stream_response(dataframe: pd.DataFrame, prompt: str) -> str:
     # Convert the DataFrame to CSV string
     openai.api_key = st.secrets.CHAT_COMPLETION_KEY
 
-    client = OpenAI(api_key=st.secrets.CHAT_COMPLETION_KEY)
+    client = OpenAI(api_key=st.secrets.CHAT_COMPLETION_KEY,
+                    organization=st.secrets.ORG_ID
+                    )
     dataframe_csv = dataframe.to_csv(index=False)
     
     # Prepare the message for the ChatGPT API
@@ -18,6 +20,8 @@ def call_gpt_and_stream_response(dataframe: pd.DataFrame, prompt: str) -> str:
         {"role": "system", "content": "You are an NBA data analyst."},
         {"role": "user", "content": f"{prompt}\n\nHere is the data:\n{dataframe_csv}"}
     ]
+
+  
     
     with st.chat_message("assistant"):
       response = ""
@@ -35,17 +39,20 @@ def call_gpt_and_stream_response(dataframe: pd.DataFrame, prompt: str) -> str:
     return response
 
 def plot_bar_chart(dataframe):
+    colname = dataframe.columns[1]
+    colname = str(colname)
+
     fig = px.bar(
         dataframe,
-        x="C_RAM",
+        x=colname,
         y="PLAYER",
         orientation='h',
-        color='C_RAM',
+        color=colname,
         color_continuous_scale='viridis',
         template='plotly_white'
     )
     fig.update_layout(
-        xaxis_title='C_RAM',
+        xaxis_title=colname,
         xaxis_title_font_size=18,
         yaxis_title='PLAYER',
         yaxis_title_font_size=18,
