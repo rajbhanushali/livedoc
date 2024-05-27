@@ -61,7 +61,6 @@ grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, up
 selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
 
 top_player = df.iloc[0,1]
-st.write(f"Here we see the top 20 players in the event with {top_player} leading the way")
 
 # Get selected rows
 selected_rows = grid_response['selected_rows']
@@ -71,5 +70,6 @@ if not selected_rows_df.empty:
     st.write("Selected player:"  )
     st.write(selected_rows_df)
 else:
-    st.write("No player selected")
+    st.write(f"Here we see the top 20 players in the event with {top_player} leading the way. Click a players name to generate a statistical analysis on their performance. ")
+
 
