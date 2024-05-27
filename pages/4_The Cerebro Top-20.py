@@ -30,13 +30,13 @@ function(params) {
     var maxValues = %s;
     if (params.value == maxValues[params.colDef.field]) {
         return {
-            'color': 'black',
+            'color': 'white',
             'backgroundColor': 'green'
         }
     }
     return {
-        'color': 'black',
-        'backgroundColor': 'white'
+        'color': 'white',
+        'backgroundColor': 'transparent'
     }
 }
 """ % max_values.to_dict())
@@ -53,7 +53,7 @@ gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren=True)
 gridOptions = gb.build()
 
 # Display the AgGrid table with highlighting
-grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed')
+grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed',ColumnsAutoSizeMode.FIT_CONTENTS)
 selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
 
 # Get selected rows
