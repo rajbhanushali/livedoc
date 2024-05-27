@@ -40,17 +40,18 @@ avg_dsi_delta = round(event_dataframe.loc[event_dataframe['PLAYER'] == top_playe
 avg_3pe_delta = round(event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"THREE_PE"].values[0] - event_dataframe['THREE_PE'].mean(),2)
 avg_atr_delta = round(event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"ATR"].values[0] - event_dataframe['ATR'].mean(),2)
 avg_psp_delta = round(event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"PSP"].values[0] - event_dataframe['PSP'].mean(),2)
-
+avg_ram_delta = round(event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"RAM"].values[0] - event_dataframe['RAM'].mean(),2)
 
 
 with col2:
     st.write(f"5MS Highlights for {top_player}")
+    st.metric(f"RAM for {top_player}", event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"RAM"].values[0],avg_ram_delta)
     st.metric(f"FGS for {top_player}", event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"FGS"].values[0],avg_fgs_delta)
     st.metric(f"DSI for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"DSI"].values[0],avg_dsi_delta)
-    st.metric(f"3PE for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"THREE_PE"].values[0],avg_3pe_delta)
 
 with col3:
-    st.write("##")
+    st.write("#")
+    st.metric(f"3PE for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"THREE_PE"].values[0],avg_3pe_delta)
     st.metric(f"ATR for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"ATR"].values[0],avg_atr_delta)
     st.metric(f"PSP for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"PSP"].values[0],avg_psp_delta)
     
