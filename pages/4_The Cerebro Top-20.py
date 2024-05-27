@@ -63,6 +63,6 @@ selected_rows = grid_response['selected_rows']
 # Display the selected player's name
 if not selected_rows_df.empty:
     st.write("Selected player:"  )
-    st.write(selected_rows)
+    st.write(selected_rows_df)
 else:
     st.write("No player selected")
