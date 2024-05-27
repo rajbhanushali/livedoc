@@ -4,7 +4,7 @@ import openai
 import plotly.express as px
 from openai import OpenAI
 import altair as alt
-from st_aggrid import AgGrid, GridOptionsBuilder, JsCode
+from st_aggrid import AgGrid, GridOptionsBuilder, JsCode, ColumnsAutoSizeMode
 
 def call_gpt_and_stream_response(dataframe: pd.DataFrame, prompt: str) -> str:
     # Convert the DataFrame to CSV string
@@ -117,6 +117,7 @@ def render_table(event_dataframe):
 
   # Apply custom cell styles using JS function for the 'C_RAM' column
   gb.configure_column('C_RAM', cellStyle=cell_style_jscode)
+
   gridOptions = gb.build()
 
   # Calculate dynamic height
@@ -130,7 +131,8 @@ def render_table(event_dataframe):
       gridOptions=gridOptions,
       height=dynamic_height,
       width='100%',
-      allow_unsafe_jscode=True
+      allow_unsafe_jscode=True,
+      columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS
   )
 
 
