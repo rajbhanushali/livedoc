@@ -23,14 +23,12 @@ event_dataframe_trimmed = event_dataframe[["RAM","C_RAM","PSP","DSI","FGS","THRE
 columns = event_dataframe_trimmed.columns
 
 # Dropdown menu for selecting a column
-column_to_plot = st.selectbox("Select a column to plot", columns)
+column_to_plot = st.selectbox("Select a skill to analyze", columns)
 
 
-# Placeholder for the two columns of graphs
 col1, col2 , col3= st.columns([2,.75,1]) 
 
 
-# Plotting in the first column
 with col1:
     st.write(f"Top {column_to_plot} for {st.session_state.selected_event}")
     top_10 = event_dataframe.nlargest(10, column_to_plot)[['PLAYER', column_to_plot]]
@@ -45,7 +43,6 @@ avg_psp_delta = round(event_dataframe.loc[event_dataframe['PLAYER'] == top_playe
 
 
 
-# Plotting in the second column
 with col2:
     st.write(f"5MS Highlights for {top_player}")
     st.metric(f"FGS for {top_player}", event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"FGS"].values[0],avg_fgs_delta)
