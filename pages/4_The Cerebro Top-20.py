@@ -59,6 +59,7 @@ gridOptions = gb.build()
 # Display the AgGrid table with highlighting
 grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed', columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
 selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
+selected_rows_df = 
 
 top_player = df.iloc[0,1]
 
@@ -69,6 +70,7 @@ selected_rows = grid_response['selected_rows']
 if not selected_rows_df.empty:
     st.write("Selected player:"  )
     st.write(selected_rows_df)
+    render_ai_button(event_dataframe,get_top20_prompt(top_player,st.session_state.selected_event)
 else:
     st.write(f"Here we see the top 20 players in the event with {top_player} leading the way. Click a players name to generate a statistical analysis on their performance. ")
 
