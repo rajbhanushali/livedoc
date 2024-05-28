@@ -87,10 +87,19 @@ def get_skill_leader_prompt(skill,event):
 def get_top20_prompt(player,event):
     return f"""
     
-    You are a youth basketball analyst. The data in this table represents the top performers from the {event} tournament. The tournament has 323 players across 32 different teams with average performers scoring X points per game, average field goal percentage of Y percent, average RAM (which is a proprietary metric showing individual game performance) of R and C_RAM (cumulative RAM) of C.
+    You are a youth basketball analyst. The data in this table represents the top performers from the {event} tournament. The tournament has X players across Y different teams with average performers scoring Z points per game, average field goal percentage of P percent, average RAM (which is a proprietary metric showing individual game performance) of R and C_RAM (cumulative RAM) of C.
 
-    I want you to take the event and based on the column {player} generate a summary similar to the one below for the leaders of that stat:
-    
-    Cayden Boozer led the event in FGS, a metric showcasing Floor General Skills. He scored a 94 which was X% better than the average, and averaged 9 assists per game, 1.6 TOs per game, and 1.4 STL/G. He accounted for X% of his teams overall assists, and was the leader in overall assists for the event with Z assists. Trailing him in our FGS leaderboard is Christian Jeffrey from NH Lightining, with a FGS score of 85 and averages of 5.5 assists, 0.5 turnovers and half a steal per game. His key outlier stat is X (Please find one outlier stat for him).
+    I want you to take the event and compare {player} to the rest of the field. talk about his key metrics defined here:
+
+    Descriptions of the key metrics:
+        - **RAM**: Overall Evaluation Score, ranging from 0 to 1000+, balancing efficiency, volume, and per-minute impact.
+        - **C-RAM**: Context Metric, comparing performance to the average, with scores from 0 to 10+, and medals for different performance levels.
+        - **PSP**: Pure Scoring Prowess, blending scoring volume and efficiency.
+        - **3PE**: 3-Point Efficiency, considering shooting volume and efficiency.
+        - **FGS**: Floor General Skills, exploring passing efficiency and volume.
+        - **ATR**: Around the Rim, indicators for big man play, including rebounds, blocks, and 2-point efficiency.
+        - **DSI**: Defensive Statistical Impact, combining events creation and defensive efficiency.    
+
+    And highlight the ones they specifically shine in relative to the field. 
 
     """
