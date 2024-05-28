@@ -62,7 +62,7 @@ selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
 selected_player= selected_rows_df.iloc[0,2]
 
 
-top_player = df.iloc[0,1]
+top_player = df.iloc[0,0]
 
 # Get selected rows
 selected_rows = grid_response['selected_rows']
