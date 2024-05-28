@@ -71,7 +71,7 @@ selected_rows = grid_response['selected_rows']
 if not selected_rows_df.empty:
     st.write("Selected player:"  )
     st.write(selected_rows_df)
-    render_ai_button(event_dataframe,get_top20_prompt(top_player,st.session_state.selected_event)
+    render_ai_button(event_dataframe,get_top20_prompt(top_player,st.session_state.selected_event))
 else:
     st.write(f"Here we see the top 20 players in the event with {top_player} leading the way. Click a players name to generate a statistical analysis on their performance. ")
 
