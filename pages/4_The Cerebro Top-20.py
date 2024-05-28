@@ -60,6 +60,7 @@ gridOptions = gb.build()
 grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed', columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
 selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
 selected_player= selected_rows_df.iloc[0,2]
+selected_rows_df = selected_rows_df.drop('_selectedRowNodeInfo', axis=1)
 
 
 top_player = df.iloc[0,1]
