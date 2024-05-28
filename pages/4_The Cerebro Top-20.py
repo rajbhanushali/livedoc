@@ -59,7 +59,7 @@ gridOptions = gb.build()
 # Display the AgGrid table with highlighting
 grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed', columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
 selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
-selected_player= selected_rows_df.iloc[0,3]
+selected_player= selected_rows_df.iloc[0,2]
 selected_player
 
 
