@@ -2,7 +2,7 @@ import streamlit as st
 from utils import plot_bar_chart, plot_pie_chart, render_ai_button
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
-from static_prompts import get_overview_prompt, get_skill_leader_prompt, get_skill_leader_prompt
+from static_prompts import get_overview_prompt, get_skill_leader_prompt, get_top20_prompt
 import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode , ColumnsAutoSizeMode
 
