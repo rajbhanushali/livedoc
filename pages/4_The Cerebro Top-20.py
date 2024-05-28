@@ -71,6 +71,7 @@ selected_rows = grid_response['selected_rows']
 if not selected_rows_df.empty:
     selected_rows_df = selected_rows_df.drop('_selectedRowNodeInfo', axis=1)
     selected_player= selected_rows_df.iloc[0,1]
+    selected_player
     st.write("Selected player:"  )
     st.write(selected_rows_df)
     render_ai_button(event_dataframe,get_top20_prompt(selected_player,st.session_state.selected_event))
