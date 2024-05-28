@@ -10,9 +10,7 @@ def call_gpt_and_stream_response(dataframe: pd.DataFrame, prompt: str) -> str:
     # Convert the DataFrame to CSV string
     openai.api_key = st.secrets.CHAT_COMPLETION_KEY
 
-    client = OpenAI(api_key=st.secrets.CHAT_COMPLETION_KEY,
-                    organization=st.secrets.ORG_ID
-                    )
+    client = OpenAI(api_key=st.secrets.CHAT_COMPLETION_KEY)
     dataframe_csv = dataframe.to_csv(index=False)
     
     # Prepare the message for the ChatGPT API
