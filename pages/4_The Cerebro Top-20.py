@@ -6,8 +6,6 @@ from static_prompts import get_overview_prompt, get_skill_leader_prompt, get_top
 import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode , ColumnsAutoSizeMode
 
-
-
 st.set_page_config(
     page_title="CerebroEvent - Overview",
     page_icon="🏀",
@@ -21,7 +19,6 @@ st.header("Select a player to learn more")
 
 event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
 df = event_dataframe.nlargest(20, "RAM")
-
 
 
 # Find the maximum values for each column
@@ -55,11 +52,9 @@ gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren=True)
 gridOptions = gb.build()
 
 
-
 # Display the AgGrid table with highlighting
 grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed', columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
 selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
-
 
 
 top_player = df.iloc[0,1]
