@@ -1,8 +1,8 @@
 import streamlit as st
-from utils import plot_bar_chart, plot_pie_chart, render_ai_button
+from utils import render_ai_button
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
-from static_prompts import get_overview_prompt, get_skill_leader_prompt, get_top20_prompt
+from static_prompts import get_top20_prompt
 import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode , ColumnsAutoSizeMode
 
@@ -10,7 +10,7 @@ st.set_page_config(
     page_title="CerebroEvent - Overview",
     page_icon="🏀",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 add_logo("assets/cerebro_logo.png", height = 300)
 
@@ -69,7 +69,7 @@ if not selected_rows_df.empty:
     selected_player
     st.write("Selected player:"  )
     st.write(selected_rows_df)
-    render_ai_button(event_dataframe,get_top20_prompt(selected_player,st.session_state.selected_event))
+    render_ai_button(event_dataframe,get_top20_prompt(selected_player, st.session_state.selected_event))
 else:
     st.write(f"Here we see the top 20 players in the event with {top_player} leading the way. Click a players name to generate a statistical analysis on their performance. ")
 

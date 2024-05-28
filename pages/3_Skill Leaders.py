@@ -1,15 +1,14 @@
 import streamlit as st
-from utils import plot_bar_chart, plot_pie_chart, render_ai_button
+from utils import plot_bar_chart, render_ai_button
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
-from static_prompts import get_overview_prompt, get_skill_leader_prompt
-import pandas as pd
+from static_prompts import get_skill_leader_prompt
 
 st.set_page_config(
     page_title="CerebroEvent - Overview",
     page_icon="🏀",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 add_logo("assets/cerebro_logo.png", height = 300)
@@ -25,9 +24,7 @@ columns = event_dataframe_trimmed.columns
 # Dropdown menu for selecting a column
 column_to_plot = st.selectbox("Select a skill to analyze", columns)
 
-
 col1, col2 , col3= st.columns([2,.75,1]) 
-
 
 with col1:
     st.write(f"Top {column_to_plot} for {st.session_state.selected_event}")
@@ -55,4 +52,4 @@ with col3:
     st.metric(f"ATR for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"ATR"].values[0],avg_atr_delta)
     st.metric(f"PSP for {top_player}",event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"PSP"].values[0],avg_psp_delta)
     
-render_ai_button(event_dataframe, get_skill_leader_prompt(column_to_plot,st.session_state.selected_event,))
+render_ai_button(event_dataframe, get_skill_leader_prompt(column_to_plot, st.session_state.selected_event))

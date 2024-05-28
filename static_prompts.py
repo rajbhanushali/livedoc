@@ -73,7 +73,7 @@ def get_player_match_prompt(player1, player2):
         Please bold the player names in your response.
     """
 
-def get_skill_leader_prompt(skill,event):
+def get_skill_leader_prompt(skill, event):
     return f"""
     
     You are a youth basketball analyst. The data in this table represents the top performers from the {event} tournament. The tournament has 323 players across 32 different teams with average performers scoring X points per game, average field goal percentage of Y percent, average RAM (which is a proprietary metric showing individual game performance) of R and C_RAM (cumulative RAM) of C.
@@ -84,7 +84,7 @@ def get_skill_leader_prompt(skill,event):
 
     """
 
-def get_top20_prompt(player,event):
+def get_top20_prompt(player, event):
     return f"""
     
     You are a youth basketball analyst. The data in this table represents the top performers from the {event} tournament. The tournament has X players across Y different teams with average performers scoring Z points per game, average field goal percentage of P percent, average RAM (which is a proprietary metric showing individual game performance) of R and C_RAM (cumulative RAM) of C.

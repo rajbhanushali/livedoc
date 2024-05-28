@@ -8,7 +8,7 @@ st.set_page_config(
     page_title="CerebroEvent - Overview",
     page_icon="🏀",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 add_logo("assets/cerebro_logo.png", height = 300)
 
