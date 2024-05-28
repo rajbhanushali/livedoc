@@ -14,12 +14,15 @@ st.set_page_config(
 )
 add_logo("assets/cerebro_logo.png", height = 300)
 
+if "selected_event" not in st.session_state or not st.session_state.selected_event or "selected_year" not in st.session_state:
+    st.error(" ### Please return to Home and select an event ")
+    st.stop()
+
 st.title(f"CEREBRO top 20 for {st.session_state.selected_event}")
 st.header("Select a player to learn more")
 
 event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
 df = event_dataframe.nlargest(20, "RAM")
-
 
 # Find the maximum values for each column
 max_values = df.iloc[:, 1:].max()
@@ -56,7 +59,6 @@ gridOptions = gb.build()
 grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed', columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
 selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
 
-
 top_player = df.iloc[0,1]
 
 # Get selected rows
@@ -65,11 +67,11 @@ selected_rows = grid_response['selected_rows']
 # Display the selected player's name
 if not selected_rows_df.empty:
     selected_rows_df = selected_rows_df.drop('_selectedRowNodeInfo', axis=1)
-    selected_player= selected_rows_df.iloc[0,1]
-    selected_player
-    st.write("Selected player:"  )
-    st.write(selected_rows_df)
-    render_ai_button(event_dataframe,get_top20_prompt(selected_player, st.session_state.selected_event))
+    selected_players = selected_rows_df["PLAYER"].tolist()  # Assuming the column name is 'Player'
+    st.write("Selected players:")
+    for player in selected_players:
+        st.write(player)
+    render_ai_button(event_dataframe,get_top20_prompt(selected_players, st.session_state.selected_event))
 else:
     st.write(f"Here we see the top 20 players in the event with {top_player} leading the way. Click a players name to generate a statistical analysis on their performance. ")
 

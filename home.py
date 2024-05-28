@@ -30,28 +30,26 @@ st.markdown(
     """
 )
 
-# df = pd.DataFrame({
-#     'Options': ["Select Option","Nike EYBL 17U - 2023", "Nike EYBL 17U - 2021", "Nike EYBL 17U - 2019", "Nike Hoop Summit - 2022", "Augusta Peach Jam - 2022"]
-# })
-
-event_data_df = get_event_data_df()
+event_dataframe = get_event_data_df()
 
 # Event selection
-event_options = event_data_df['Event'].unique().tolist()
-selected_event = st.selectbox("Select an Event", ["Nike EYBL (16U)"] + event_options)
+event_options = event_dataframe['Event'].unique().tolist()
+selected_event = st.selectbox("Select an Event", event_options, index=event_options.index("Nike EYBL (17U)"))
 
-# Step 4: Add a button for confirmation
-if selected_event != "Select Option":
-    st.session_state.selected_event = selected_event
+# Get the available years for the selected event
+year_options = event_dataframe[event_dataframe['Event'] == selected_event]['Year'].unique().tolist()
 
-    # Year selection based on selected event
-    year_options = event_data_df[event_data_df['Event'] == st.session_state.selected_event]['Year'].tolist()
-    selected_year = st.selectbox("Select a Year", ["2021"] + year_options)
-
-    if selected_year != "Select Option":
-        st.session_state.selected_year = selected_year
-        st.success(f"You have selected: {st.session_state.selected_event} - {st.session_state.selected_year}")
-    else:
-        st.session_state.selected_year = None
+# Set the default year for the default event
+if selected_event == "Nike EYBL (17U)":
+    default_year = 2021 if 2021 in year_options else year_options[0]
 else:
-    st.session_state.selected_event = None
+    default_year = year_options[0]
+
+# Year selection based on selected event
+selected_year = st.selectbox("Select a Year", year_options, index=year_options.index(default_year))
+
+# Store selected values in session state
+st.session_state.selected_event = selected_event
+st.session_state.selected_year = selected_year
+
+st.success(f"You have selected: {st.session_state.selected_event} - {st.session_state.selected_year}")
