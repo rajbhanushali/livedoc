@@ -8,7 +8,16 @@ def get_table_from_snowflake(selected_event, selected_year):
     if selected_event and selected_year:
         sql = get_sql_query_from_event(selected_event, selected_year)
         table_response = conn.query(sql)
-        table_response = table_response.round(2)
+        # Define the columns that need to be rounded to the nearest whole number
+        whole_number_columns = ["PSP", "DSI", "FGS", "THREE_PE", "ATR", "RAM"]
+        
+        # Round all columns to 1 decimal place
+        table_response = table_response.round(1)
+        
+        # Round specific columns to the nearest whole number
+        for col in whole_number_columns:
+            if col in table_response.columns:
+                table_response[col] = table_response[col].round(0)
 
     return table_response
 

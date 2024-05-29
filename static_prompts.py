@@ -1,13 +1,13 @@
 def get_overview_prompt(total_players, avg_ram, avg_cram):
     return f"""
-        You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. The tournament has {total_players} total players, with an average RAM score of {avg_ram:.2f} and an average C_RAM score of {avg_cram:.2f}. Analyze the top players' performances relative to these averages and the 5 metric suite (PSP, 3PE, FGS, ATR, DSI).
+        You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. The tournament has {total_players} total players, with an average RAM score of {avg_ram} and an average C_RAM score of {avg_cram}. Analyze the top players' performances relative to these averages and the 5 metric suite (PSP, 3PE, FGS, ATR, DSI).
 
         Provide a summary highlighting the following sections:
 
         **Event Description and Highlights**
         - Total players: {total_players}
-        - Average RAM score: {avg_ram:.2f}
-        - Average C_RAM score: {avg_cram:.2f}
+        - Average RAM score: {avg_ram}
+        - Average C_RAM score: {avg_cram}
 
         **Impressive Performances**
         - Notable performances from players with the highest RAM and C_RAM scores.

@@ -28,8 +28,8 @@ avg_cram = event_dataframe['C_RAM'].mean()
 # Display total players and average RAM using columns
 col1, col2, col3 = st.columns(3)
 col1.metric("Total Players", total_players)
-col2.metric("Average RAM", f"{avg_ram:.2f}")
-col3.metric("Average C_RAM", f"{avg_cram:.2f}")
+col2.metric("Average RAM", f"{avg_ram:.0f}")
+col3.metric("Average C_RAM", f"{avg_cram:.1f}")
 
 top_10_cram = event_dataframe.nlargest(10, 'C_RAM')[['PLAYER', 'C_RAM']]
 

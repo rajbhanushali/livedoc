@@ -40,14 +40,21 @@ def plot_bar_chart(dataframe):
     colname = dataframe.columns[1]
     colname = str(colname)
 
+    # Define the custom color scale
+    colors = ['#000000', '#CD7F32', '#C0C0C0', '#FFD700']  # Grey to Bronze to Silver to Gold
+    
+    # Normalize the values in the column for the continuous color scale
+    dataframe['Normalized'] = (dataframe[colname] - dataframe[colname].min()) / (dataframe[colname].max() - dataframe[colname].min())
+
     fig = px.bar(
         dataframe,
         x=colname,
         y="PLAYER",
         orientation='h',
-        color=colname,
-        color_continuous_scale='viridis',
-        template='plotly_white'
+        color='Normalized',
+        color_continuous_scale=colors,
+        template='plotly_white',
+        hover_data={colname: True, 'PLAYER': True, 'Normalized': False}  # Include only desired columns in hover data
     )
     fig.update_layout(
         xaxis_title=colname,
