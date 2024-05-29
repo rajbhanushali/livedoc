@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import plot_bar_chart, plot_pie_chart, render_ai_button
+from utils import plot_c_ram_bar_chart, plot_pie_chart, render_ai_button
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
 from static_prompts import get_overview_prompt
@@ -37,7 +37,7 @@ top_10_cram = event_dataframe.nlargest(10, 'C_RAM')[['PLAYER', 'C_RAM']]
 left_column, right_column = st.columns([1, 1])
 with left_column:
     st.markdown("### Top Players by C-RAM Score")
-    plot_bar_chart(top_10_cram)
+    plot_c_ram_bar_chart(top_10_cram)
 with right_column:
     st.markdown("### Event Breakdown by C-RAM")
     plot_pie_chart(event_dataframe)

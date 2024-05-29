@@ -47,7 +47,7 @@ def plot_dataviz(data_viz_metadata, table_data):
 
     if data_viz_metadata.get('requires_visual') == False:
         st.text("No relevant visual generated. Ask me another question!")
-        return
+        return {"description" : data_viz_metadata["description"]}
     
     requires_visual = data_viz_metadata["requires_visual"]
     properties = data_viz_metadata["properties"]

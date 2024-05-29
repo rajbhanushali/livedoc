@@ -51,6 +51,11 @@ df.insert(0,"", False)
 gb = GridOptionsBuilder.from_dataframe(df)
 for col in df.columns[1:]:  # Exclude the 'SELECT' column from styling
     gb.configure_column(col, cellStyle=highlight_max)
+
+percentage_columns = ["FG_PCT", "THREE_PT_PCT", "FT_PCT"]
+for col in percentage_columns:
+    gb.configure_column(col, type=["numericColumn"], valueFormatter="x.toFixed(0) + '%'")
+
 gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren=True)
 gridOptions = gb.build()
 

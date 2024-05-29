@@ -36,6 +36,59 @@ def call_gpt_and_stream_response(dataframe: pd.DataFrame, prompt: str) -> str:
     # Extract and return the description from the response
     return response
 
+def plot_c_ram_bar_chart(dataframe):
+    colname = "C_RAM"
+
+    # Define the custom color scale
+    colors = {
+        'Gold': '#FFD700',
+        'Silver': '#C0C0C0',
+        'Bronze': '#CD7F32',
+        'Not Rated': '#000000'
+    }
+
+    # Assign categories based on the value ranges
+    def assign_category(value):
+        if value > 10:
+            return 'Gold'
+        elif value > 8.5:
+            return 'Silver'
+        elif value > 7:
+            return 'Bronze'
+        else:
+            return 'Not Rated'
+
+    dataframe['Category'] = dataframe[colname].apply(assign_category)
+
+    # Ensure all categories are present in the dataframe to avoid KeyError
+    for category in colors.keys():
+        if category not in dataframe['Category'].values:
+            dataframe = dataframe.append({'PLAYER': '', colname: 0, 'Category': category}, ignore_index=True)
+
+    fig = px.bar(
+        dataframe,
+        x=colname,
+        y="PLAYER",
+        orientation='h',
+        color='Category',
+        color_discrete_map=colors,
+        template='plotly_white',
+        hover_data={colname: True, 'PLAYER': True, 'Category': False}  # Include only desired columns in hover data
+    )
+
+    fig.update_layout(
+        xaxis_title=colname,
+        xaxis_title_font_size=18,
+        yaxis_title='PLAYER',
+        yaxis_title_font_size=18,
+        yaxis={'categoryorder': 'total ascending'},
+        margin=dict(l=20, r=20, t=30, b=20),  # Adjust margins
+        autosize=True,  # Make the chart auto-size
+        legend_title_text="Medal"  # Change the legend title
+    )
+
+    st.plotly_chart(fig)
+
 def plot_bar_chart(dataframe):
     colname = dataframe.columns[1]
     colname = str(colname)
@@ -85,7 +138,7 @@ def plot_pie_chart(event_dataframe):
   })
   base = alt.Chart(pie_data).encode(
     theta=alt.Theta("Values:Q", stack=True),
-    color=alt.Color("Category:N", scale=alt.Scale(domain=categories, range=colors))
+    color=alt.Color("Category:N", scale=alt.Scale(domain=categories, range=colors), title="Medal")
   )
 
   arc = base.mark_arc(innerRadius=50, outerRadius=150, stroke="#fff")
@@ -120,6 +173,11 @@ def render_table(event_dataframe):
 """)
 
   gb = GridOptionsBuilder.from_dataframe(event_dataframe)
+  
+  # Apply percentage formatting to specific columns
+  percentage_columns = ["FG_PCT", "THREE_PT_PCT", "FT_PCT"]
+  for col in percentage_columns:
+    gb.configure_column(col, type=["numericColumn"], valueFormatter="x.toFixed(0) + '%'")
 
   # Apply custom cell styles using JS function for the 'C_RAM' column
   gb.configure_column('C_RAM', cellStyle=cell_style_jscode)
