@@ -52,4 +52,4 @@ with col3:
     st.metric(f"ATR for {top_player}", int(event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"ATR"].values[0]), avg_atr_delta)
     st.metric(f"PSP for {top_player}", int(event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"PSP"].values[0]), avg_psp_delta)
     
-render_ai_button(event_dataframe, get_skill_leader_prompt(column_to_plot, st.session_state.selected_event))
+render_ai_button(event_dataframe.nlargest(10, column_to_plot), get_skill_leader_prompt(column_to_plot, st.session_state.selected_event))
