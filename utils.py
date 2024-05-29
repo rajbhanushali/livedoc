@@ -63,7 +63,8 @@ def plot_bar_chart(dataframe):
         yaxis_title_font_size=18,
         yaxis={'categoryorder': 'total ascending'},
         margin=dict(l=20, r=20, t=30, b=20),  # Adjust margins
-        autosize=True  # Make the chart auto-size
+        autosize=True,
+        coloraxis_showscale=False
     )
     st.plotly_chart(fig)
 
