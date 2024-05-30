@@ -18,7 +18,7 @@ if "selected_event" not in st.session_state or not st.session_state.selected_eve
     st.error(" ### Please return to Home and select an event ")
     st.stop()
 
-st.title(f"CEREBRO top 20 for {st.session_state.selected_event}")
+st.title(f"The Cerebro Top 20 - {st.session_state.selected_event}")
 st.header("Select a player to learn more")
 
 event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
