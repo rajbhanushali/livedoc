@@ -5,7 +5,7 @@ import pandas as pd
 from streamlit_extras.app_logo import add_logo
 from utils import render_table, render_ai_button
 from sql_queries import get_table_from_snowflake
-from static_prompts import mop_ladder_prompt, get_comparative_prompt
+from static_prompts import get_comparative_prompt
 
 st.set_page_config(
     page_title="CerebroEvent - MOP Ladder",
