@@ -32,18 +32,16 @@ with col_data:
     st.markdown("### Player Rankings")
 
     grid_object = render_table(top_20_cram)
+    selected_rows_df = pd.DataFrame(grid_object['selected_rows'])
 
 # Create the bar chart and display it in the second column
 with col_radar:
     st.markdown("### Player Comparison using 5MS")
 
-    selected_players = st.multiselect(
-        "Select Players for Radar Plot",
-        options=top_20_cram["PLAYER"].unique(),
-        default=top_20_cram["PLAYER"].iloc[:2]
-    )
-
-    selected_players = top_20_cram[top_20_cram["PLAYER"].isin(selected_players)]
+    if selected_rows_df.empty:
+        selected_players = event_dataframe.iloc[:1]  # Default to the first player
+    else:
+        selected_players = event_dataframe[event_dataframe["PLAYER"].isin(selected_rows_df["PLAYER"])]
 
     categories = ['PSP', 'ATR', 'DSI', 'FGS', 'THREE_PE']
     radar_data = selected_players.melt(id_vars=['PLAYER'], value_vars=categories, var_name='categories', value_name='values')
@@ -78,7 +76,6 @@ with col_radar:
 
     st.plotly_chart(fig, theme="streamlit", use_container_width = False)
 
-selected_rows_df = pd.DataFrame(grid_object['selected_rows'])
 # Display the selected player's name
 if not selected_rows_df.empty:
     selected_rows_df = selected_rows_df.drop('_selectedRowNodeInfo', axis=1)
