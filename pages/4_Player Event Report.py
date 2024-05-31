@@ -2,12 +2,12 @@ import streamlit as st
 import plotly.express as px
 from streamlit_extras.app_logo import add_logo
 
-from utils import render_table, render_ai_button
+from utils import render_ai_button
 from sql_queries import get_table_from_snowflake
-from static_prompts import mop_ladder_prompt
+from static_prompts import player_report_prompt
 
 st.set_page_config(
-    page_title="CerebroEvent - MOP Ladder",
+    page_title="CerebroEvent - Player Report",
     page_icon="🏀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -15,36 +15,32 @@ st.set_page_config(
 add_logo("assets/cerebro_logo.png", height = 300)
 
 if "selected_event" not in st.session_state or not st.session_state.selected_event or "selected_year" not in st.session_state:
-    st.error(" ### Please return to Home and select an event ")
-    st.stop()
+    st.session_state.selected_event = "Nike EYBL (17U)"
+    st.session_state.selected_year = 2021
 
-st.title(f"Most Outstanding Performance Ladder for {st.session_state.selected_event}")
+st.title(f"Player Event Report for {st.session_state.selected_event}")
 
 event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
 
-top_10_cram = event_dataframe.nlargest(10, 'C_RAM')
+st.markdown("### Select a player. Get Some Insights")
+selected_player = st.selectbox(
+    "Select Players for Radar Plot",
+    options=event_dataframe["PLAYER"].unique(),
+)
 
 col_data, col_radar = st.columns(2)
 
 # Display the DataFrame in the first column with color coding
 with col_data:
-    st.markdown("### Player Rankings")
-
-    selected_players = st.multiselect(
-        "Select Players for Radar Plot",
-        options=top_10_cram["PLAYER"].unique(),
-        default=top_10_cram["PLAYER"].iloc[:2]
-    )
-
-    render_table(top_10_cram)
+    st.markdown("### Player Visuals")
 
 # Create the bar chart and display it in the second column
 with col_radar:
-    st.markdown("### Player Comparison using 5MS")
-    selected_players = top_10_cram[top_10_cram["PLAYER"].isin(selected_players)]
+    st.markdown("### Player 5MS")
+    selected_player_row = event_dataframe[event_dataframe["PLAYER"] == selected_player]
 
     categories = ['PSP', 'ATR', 'DSI', 'FGS', 'THREE_PE']
-    radar_data = selected_players.melt(id_vars=['PLAYER'], value_vars=categories, var_name='categories', value_name='values')
+    radar_data = selected_player_row.melt(id_vars=['PLAYER'], value_vars=categories, var_name='categories', value_name='values')
 
     fig = px.line_polar(radar_data, r="values",
                     theta="categories",
@@ -62,7 +58,7 @@ with col_radar:
                   #legend_title_font_color="green"
                   )
 
-    fig.update_layout(legend_font_color="black",title = "Player Comparison")    
+    fig.update_layout(legend_font_color="black")    
     fig.update_layout(
         legend=dict(
             orientation="h",
@@ -78,4 +74,4 @@ with col_radar:
 
 # Description at the bottom of the page
 
-render_ai_button(top_10_cram, mop_ladder_prompt)
+render_ai_button(selected_player_row, player_report_prompt)

@@ -29,26 +29,28 @@ def get_overview_prompt(total_players, avg_ram, avg_cram):
         Use this information to generate a detailed analysis of the top players' performances, and easter-egg insights into interesting statistics from the event, following the required sections.
     """
 
-mop_ladder_prompt = f"""
-  You are a youth basketball analyst. The data in this table represents the top performers from an event. Analyze the top players' performances relative to these averages and the 5 metric suite (PSP, 3PE, FGS, ATR, DSI).
+player_report_prompt = f"""
+  You are a youth basketball analyst. The data in this table represents a single performer from an event. Analyze the players' performance and the 5 metric suite (PSP, 3PE, FGS, ATR, DSI).
+
+  Here are descriptions of the key metrics:
+  - **RAM**: Overall Evaluation Score, ranging from 0 to 1000+, balancing efficiency, volume, and per-minute impact.
+  - **C-RAM**: Context Metric, comparing performance to the average, with scores from 0 to 10+, and medals for different performance levels.
+  - **PSP**: Pure Scoring Prowess, blending scoring volume and efficiency.
+  - **3PE**: 3-Point Efficiency, considering shooting volume and efficiency.
+  - **FGS**: Floor General Skills, exploring passing efficiency and volume.
+  - **ATR**: Around the Rim, indicators for big man play, including rebounds, blocks, and 2-point efficiency.
+  - **DSI**: Defensive Statistical Impact, combining events creation and defensive efficiency.
 
   Provide a summary highlighting the following sections:
 
-  **Brief Introduductive Paragraph**
-  - In paragraph natural text, give a summary of the players that were exceptional, outlining each of the top players in 5MS statistics.
-
-  **Detailed Summary**
-  - Comparison of notable performer's statistics to the average RAM and C_RAM.
-  - Key players who lead in box score stats such as points, rebounds, assists, steals, and blocks.
-  - Efficiency of the best players using fg_pct, three_pt_pct, and free_throw_pct
-  - Detailed analysis using the 5 metric suite (PSP, 3PE, FGS, ATR, DSI).
-  - Highlights of players' strengths where others have weakness, and what kind of team they would best fit in / succeed with.
-
+  **PLayer Summary**
+  - In paragraph natural text, give a summary of the player and his stats, outlining box score and 5ms.
+  - Include Efficiency using fg_pct, three_pt_pct, and free_throw_pct
+  - Highlight strengths, weaknesses, and type of what kind of team they would best fit in / succeed with in its own paragraph. 
+  
   **Interesting (Easter Egg) Statistics**
-  - Highlight unique or surprising stats from the event.
-  - Provide insights into specific players' standout performances or anomalies. 
+  - Highlight unique or surprising stats from the player.
 
-  Use this information to generate a detailed analysis of the top players' performances. Focus on comparisons between the players and highlighting strengths in one where a different player has a weakness, etc.
 """
 
 def get_player_match_prompt(player1, player2):
@@ -99,7 +101,7 @@ def get_skill_leader_prompt(skill, event):
         Use this format to generate a detailed summary of the leaders in the {skill} stat.
     """
 
-def get_top20_prompt(players, event):
+def get_comparative_prompt(players, event):
     player_list = ", ".join([f"**{player}**" for player in players])
     return f"""
         You are a youth basketball analyst. The data in this table represents the top performers from the {event} tournament.

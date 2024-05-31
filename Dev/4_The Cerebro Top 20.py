@@ -2,7 +2,7 @@ import streamlit as st
 from utils import render_ai_button
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
-from static_prompts import get_top20_prompt
+from static_prompts import get_comparative_prompt
 import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode , ColumnsAutoSizeMode
 
@@ -15,8 +15,8 @@ st.set_page_config(
 add_logo("assets/cerebro_logo.png", height = 300)
 
 if "selected_event" not in st.session_state or not st.session_state.selected_event or "selected_year" not in st.session_state:
-    st.error(" ### Please return to Home and select an event ")
-    st.stop()
+    st.session_state.selected_event = "Nike EYBL (17U)"
+    st.session_state.selected_year = 2021
 
 st.title(f"The Cerebro Top 20 - {st.session_state.selected_event}")
 st.header("Select a player to learn more")
@@ -46,7 +46,6 @@ function(params) {
 # Add a checkbox column at the first position
 df.insert(0,"", False)
 
-
 # Create the AgGrid configuration
 gb = GridOptionsBuilder.from_dataframe(df)
 for col in df.columns[1:]:  # Exclude the 'SELECT' column from styling
@@ -58,7 +57,6 @@ for col in percentage_columns:
 
 gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren=True)
 gridOptions = gb.build()
-
 
 # Display the AgGrid table with highlighting
 grid_response = AgGrid(df, gridOptions=gridOptions, allow_unsafe_jscode=True, update_mode='selection_changed', columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS)
@@ -76,7 +74,7 @@ if not selected_rows_df.empty:
     st.write("Selected players:")
     for player in selected_players:
         st.write(player)
-    render_ai_button(event_dataframe,get_top20_prompt(selected_players, st.session_state.selected_event))
+    render_ai_button(event_dataframe,get_comparative_prompt(selected_players, st.session_state.selected_event))
 else:
     st.write(f"Here we see the top 20 players in the event with {top_player} leading the way. Click a players name to generate a statistical analysis on their performance. ")
 

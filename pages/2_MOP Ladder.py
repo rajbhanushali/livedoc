@@ -1,10 +1,11 @@
 import streamlit as st
 import plotly.express as px
-from streamlit_extras.app_logo import add_logo
+import pandas as pd
 
+from streamlit_extras.app_logo import add_logo
 from utils import render_table, render_ai_button
 from sql_queries import get_table_from_snowflake
-from static_prompts import mop_ladder_prompt
+from static_prompts import mop_ladder_prompt, get_comparative_prompt
 
 st.set_page_config(
     page_title="CerebroEvent - MOP Ladder",
@@ -15,14 +16,14 @@ st.set_page_config(
 add_logo("assets/cerebro_logo.png", height = 300)
 
 if "selected_event" not in st.session_state or not st.session_state.selected_event or "selected_year" not in st.session_state:
-    st.error(" ### Please return to Home and select an event ")
-    st.stop()
+    st.session_state.selected_event = "Nike EYBL (17U)"
+    st.session_state.selected_year = 2021
 
 st.title(f"Most Outstanding Performance Ladder for {st.session_state.selected_event}")
 
 event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
 
-top_10_cram = event_dataframe.nlargest(10, 'C_RAM')
+top_20_cram = event_dataframe.nlargest(20, 'C_RAM')
 
 col_data, col_radar = st.columns(2)
 
@@ -30,18 +31,19 @@ col_data, col_radar = st.columns(2)
 with col_data:
     st.markdown("### Player Rankings")
 
-    selected_players = st.multiselect(
-        "Select Players for Radar Plot",
-        options=top_10_cram["PLAYER"].unique(),
-        default=top_10_cram["PLAYER"].iloc[:2]
-    )
-
-    render_table(top_10_cram)
+    grid_object = render_table(top_20_cram)
 
 # Create the bar chart and display it in the second column
 with col_radar:
     st.markdown("### Player Comparison using 5MS")
-    selected_players = top_10_cram[top_10_cram["PLAYER"].isin(selected_players)]
+
+    selected_players = st.multiselect(
+        "Select Players for Radar Plot",
+        options=top_20_cram["PLAYER"].unique(),
+        default=top_20_cram["PLAYER"].iloc[:2]
+    )
+
+    selected_players = top_20_cram[top_20_cram["PLAYER"].isin(selected_players)]
 
     categories = ['PSP', 'ATR', 'DSI', 'FGS', 'THREE_PE']
     radar_data = selected_players.melt(id_vars=['PLAYER'], value_vars=categories, var_name='categories', value_name='values')
@@ -76,6 +78,16 @@ with col_radar:
 
     st.plotly_chart(fig, theme="streamlit", use_container_width = False)
 
-# Description at the bottom of the page
+selected_rows_df = pd.DataFrame(grid_object['selected_rows'])
+# Display the selected player's name
+if not selected_rows_df.empty:
+    selected_rows_df = selected_rows_df.drop('_selectedRowNodeInfo', axis=1)
+    selected_players = selected_rows_df["PLAYER"].tolist()  # Assuming the column name is 'Player'
+    st.markdown("#### **Selected players:**")
+    for player in selected_players:
+        st.write(player)
+    render_ai_button(event_dataframe, get_comparative_prompt(selected_players, st.session_state.selected_event))
+else:
+    st.write(f"Here we see the top 20 most outstanding players in the event. Click a players name to generate a statistical analysis on their performance. ")
 
-render_ai_button(top_10_cram, mop_ladder_prompt)
+# Description at the bottom of the page

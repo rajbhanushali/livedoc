@@ -12,8 +12,8 @@ st.set_page_config(
 add_logo("assets/cerebro_logo.png", height = 300)
 
 if "selected_event" not in st.session_state or not st.session_state.selected_event or "selected_year" not in st.session_state:
-    st.error(" ### Please return to Home and select an event ")
-    st.stop()
+    st.session_state.selected_event = "Nike EYBL (17U)"
+    st.session_state.selected_year = 2021
 
 st.title(f"Full Leaderboard for {st.session_state.selected_event}")
 
