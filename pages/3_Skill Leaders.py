@@ -1,6 +1,6 @@
 import streamlit as st
 from utils import plot_bar_chart, render_ai_button
-from sql_queries import get_table_from_snowflake
+from sql_queries import get_player_averages_dataframe
 from streamlit_extras.app_logo import add_logo
 from static_prompts import get_skill_leader_prompt
 
@@ -15,7 +15,7 @@ add_logo("assets/cerebro_logo.png", height = 300)
 
 st.title(f"Skill Leaders of {st.session_state.selected_event}")
 
-event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
+event_dataframe = get_player_averages_dataframe(st.session_state.selected_event, st.session_state.selected_year)
 
 event_dataframe_trimmed = event_dataframe[["RAM","C_RAM","PSP","DSI","FGS","THREE_PE","ATR"]]
 

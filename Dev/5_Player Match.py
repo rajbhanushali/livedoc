@@ -1,6 +1,6 @@
 import streamlit as st
 from utils import render_player_match_ai_button, render_event_table
-from sql_queries import get_table_from_snowflake
+from sql_queries import get_player_averages_dataframe
 from streamlit_extras.app_logo import add_logo
 from static_prompts import get_player_match_prompt
 
@@ -18,7 +18,7 @@ if "selected_event" not in st.session_state or not st.session_state.selected_eve
 
 st.title(f"Player Match for {st.session_state.selected_event}")
 
-event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
+event_dataframe = get_player_averages_dataframe(st.session_state.selected_event, st.session_state.selected_year)
 
 # Sort the DataFrame by the specified column in descending order and take the top 100 records
 event_dataframe = event_dataframe.sort_values(by="C_RAM", ascending=False)

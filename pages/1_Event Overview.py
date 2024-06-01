@@ -1,6 +1,6 @@
 import streamlit as st
 from utils import plot_c_ram_bar_chart, plot_pie_chart, render_ai_button
-from sql_queries import get_table_from_snowflake
+from sql_queries import get_player_averages_dataframe
 from streamlit_extras.app_logo import add_logo
 from static_prompts import get_overview_prompt
 
@@ -19,7 +19,7 @@ if "selected_event" not in st.session_state or not st.session_state.selected_eve
 # Title of the page
 st.title(f"Overview of {st.session_state.selected_event}")
 
-event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
+event_dataframe = get_player_averages_dataframe(st.session_state.selected_event, st.session_state.selected_year)
 
 total_players = event_dataframe["PLAYER"].nunique()
 avg_ram = event_dataframe['RAM'].mean()

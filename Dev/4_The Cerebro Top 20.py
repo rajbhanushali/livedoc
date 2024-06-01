@@ -1,6 +1,6 @@
 import streamlit as st
 from utils import render_ai_button
-from sql_queries import get_table_from_snowflake
+from sql_queries import get_player_averages_dataframe
 from streamlit_extras.app_logo import add_logo
 from static_prompts import get_comparative_prompt
 import pandas as pd
@@ -21,7 +21,7 @@ if "selected_event" not in st.session_state or not st.session_state.selected_eve
 st.title(f"The Cerebro Top 20 - {st.session_state.selected_event}")
 st.header("Select a player to learn more")
 
-event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
+event_dataframe = get_player_averages_dataframe(st.session_state.selected_event, st.session_state.selected_year)
 df = event_dataframe.nlargest(20, "RAM")
 
 # Find the maximum values for each column

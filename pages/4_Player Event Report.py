@@ -3,7 +3,7 @@ import plotly.express as px
 from streamlit_extras.app_logo import add_logo
 
 from utils import render_ai_button, render_box_score_table
-from sql_queries import get_table_from_snowflake, get_player_box_scores
+from sql_queries import get_player_averages_dataframe, get_player_box_scores
 from static_prompts import player_report_prompt
 
 st.set_page_config(
@@ -21,7 +21,7 @@ if "selected_event" not in st.session_state or not st.session_state.selected_eve
 st.title(f"Player Event Report for {st.session_state.selected_event}")
 
 
-event_averages_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
+event_averages_dataframe = get_player_averages_dataframe(st.session_state.selected_event, st.session_state.selected_year)
 
 st.markdown("### Select a player. Get Some Insights")
 selected_player = st.selectbox(

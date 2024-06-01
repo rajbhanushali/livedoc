@@ -1,6 +1,136 @@
 import streamlit as st
 import pandas as pd
 
+def get_team_event_dataframe(event_keyword, selected_year):
+    sql_query_team = f"""
+        WITH GameResults AS (
+            SELECT
+                EVENT,
+                YEAR,
+                TEAM,
+                UNIQUE_GAME_ID,
+                MAX(WIN) AS WIN
+            FROM
+                NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_MAY_21
+            WHERE
+                EVENT ILIKE '{event_keyword}'
+                AND YEAR = '{selected_year}'
+            GROUP BY
+                EVENT,
+                YEAR,
+                TEAM,
+                UNIQUE_GAME_ID
+        ),
+        GameStats AS (
+            SELECT
+                EVENT,
+                YEAR,
+                TEAM,
+                UNIQUE_GAME_ID,
+                SUM(PTS) AS TOTAL_POINTS,
+                SUM(REB) AS TOTAL_REBOUNDS,
+                SUM(AST) AS TOTAL_ASSISTS,
+                SUM(STL) AS TOTAL_STEALS,
+                SUM(BLK) AS TOTAL_BLOCKS,
+                SUM(TURNOVERS) AS TOTAL_TURNOVERS,
+                SUM(PF) AS TOTAL_FOULS,
+                SUM(ORB) AS TOTAL_OFFENSIVE_REBOUNDS,
+                SUM(DRB) AS TOTAL_DEFENSIVE_REBOUNDS,
+                SUM(FGM) AS TOTAL_FGM,
+                SUM(FGA) AS TOTAL_FGA,
+                SUM(THREE_POINTS_MADE) AS TOTAL_3PM,
+                SUM(THREE_POINTS_ATTEMPTED) AS TOTAL_3PA,
+                SUM(FREE_THROWS_MADE) AS TOTAL_FTM,
+                SUM(FTA) AS TOTAL_FTA
+            FROM
+                NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_MAY_21
+            WHERE
+                EVENT ILIKE '{event_keyword}'
+                AND YEAR = '{selected_year}'
+            GROUP BY
+                EVENT,
+                YEAR,
+                TEAM,
+                UNIQUE_GAME_ID
+        ),
+        TeamAverages AS (
+            SELECT
+                EVENT,
+                YEAR,
+                TEAM,
+                COUNT(UNIQUE_GAME_ID) AS GP,
+                ROUND(AVG(TOTAL_POINTS), 1) AS PPG,
+                ROUND(AVG(TOTAL_REBOUNDS), 1) AS RPG,
+                ROUND(AVG(TOTAL_ASSISTS), 1) AS APG,
+                ROUND(AVG(TOTAL_STEALS), 1) AS SPG,
+                ROUND(AVG(TOTAL_BLOCKS), 1) AS BPG,
+                ROUND(AVG(TOTAL_TURNOVERS), 1) AS TOV,
+                ROUND(AVG(TOTAL_FOULS), 1) AS PF,
+                ROUND(AVG(TOTAL_OFFENSIVE_REBOUNDS), 1) AS OREB,
+                ROUND(AVG(TOTAL_DEFENSIVE_REBOUNDS), 1) AS DREB,
+                ROUND(AVG(TOTAL_FGM) / AVG(TOTAL_FGA), 2) * 100 AS "FG%",
+                ROUND(AVG(TOTAL_3PM) / AVG(TOTAL_3PA), 2) * 100 AS "3FG%",
+                ROUND(AVG(TOTAL_FTM) / AVG(TOTAL_FTA), 2) * 100 AS "FT%"
+            FROM
+                GameStats
+            GROUP BY
+                EVENT,
+                YEAR,
+                TEAM
+        )
+        SELECT
+            gr.EVENT,
+            gr.YEAR,
+            gr.TEAM,
+            SUM(gr.WIN) AS WINS,
+            COUNT(gr.UNIQUE_GAME_ID) - SUM(gr.WIN) AS LOSSES,
+            ta.GP,
+            ta.PPG,
+            ta.RPG,
+            ta.APG,
+            ta.SPG,
+            ta.BPG,
+            ta.TOV,
+            ta.PF,
+            ta.OREB,
+            ta.DREB,
+            ta."FG%",
+            ta."3FG%",
+            ta."FT%"
+        FROM
+            GameResults gr
+        JOIN
+            TeamAverages ta
+        ON
+            gr.EVENT = ta.EVENT
+            AND gr.YEAR = ta.YEAR
+            AND gr.TEAM = ta.TEAM
+        GROUP BY
+            gr.EVENT,
+            gr.YEAR,
+            gr.TEAM,
+            ta.GP,
+            ta.PPG,
+            ta.RPG,
+            ta.APG,
+            ta.SPG,
+            ta.BPG,
+            ta.TOV,
+            ta.PF,
+            ta.OREB,
+            ta.DREB,
+            ta."FG%",
+            ta."3FG%",
+            ta."FT%"
+        ORDER BY
+            WINS DESC,
+            LOSSES ASC;
+    """
+
+    conn = st.connection("snowpark")
+    table_response = conn.query(sql_query_team)
+    return table_response
+
 def get_player_box_scores(player_name, event_keyword, selected_year):
     conn = st.connection("snowpark")
     player_scores = pd.DataFrame()
@@ -36,7 +166,7 @@ def get_player_box_scores(player_name, event_keyword, selected_year):
     return player_scores
 
 
-def get_table_from_snowflake(selected_event, selected_year):
+def get_player_averages_dataframe(selected_event, selected_year):
     conn = st.connection("snowpark")
     table_response = pd.DataFrame()
 

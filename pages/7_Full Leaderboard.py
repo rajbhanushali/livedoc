@@ -1,6 +1,6 @@
 import streamlit as st
 from utils import render_event_table
-from sql_queries import get_table_from_snowflake
+from sql_queries import get_player_averages_dataframe
 from streamlit_extras.app_logo import add_logo
 
 st.set_page_config(
@@ -17,6 +17,6 @@ if "selected_event" not in st.session_state or not st.session_state.selected_eve
 
 st.title(f"Full Leaderboard for {st.session_state.selected_event}")
 
-event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
+event_dataframe = get_player_averages_dataframe(st.session_state.selected_event, st.session_state.selected_year)
 
 render_event_table(event_dataframe)
