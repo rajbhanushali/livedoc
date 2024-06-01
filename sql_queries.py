@@ -79,8 +79,6 @@ def get_team_event_dataframe(event_keyword, selected_year):
                 TEAM
         )
         SELECT
-            gr.EVENT,
-            gr.YEAR,
             gr.TEAM,
             SUM(gr.WIN) AS WINS,
             COUNT(gr.UNIQUE_GAME_ID) - SUM(gr.WIN) AS LOSSES,
