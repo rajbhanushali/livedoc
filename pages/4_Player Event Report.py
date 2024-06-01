@@ -35,12 +35,12 @@ col_data, col_radar = st.columns(2)
 
 # Display the DataFrame in the first column with color coding
 with col_data:
-    st.markdown("### Player Visuals")
+    st.markdown("#### Player Box Score")
     render_box_score_table(player_box_score_dataframe)
 
 # Create the bar chart and display it in the second column
 with col_radar:
-    st.markdown("### Player 5MS")
+    st.markdown("#### Player 5MS")
     selected_player_row = event_averages_dataframe[event_averages_dataframe["PLAYER"] == selected_player]
 
     categories = ['PSP', 'ATR', 'DSI', 'FGS', 'THREE_PE']
