@@ -157,7 +157,71 @@ def color_cram_value(val):
     return f'background-color: {color}'
 
 
-def render_table(event_dataframe):
+def render_box_score_table(box_score_dataframe):
+    # Filter and order columns
+    columns_to_show = [
+        "PLAYER", "TEAM", "OPP", "WIN", "TEAM_SCORE", "OPP_SCORE", 
+        "RAM", "C_RAM", "PSP", "FGS", "DSI", "THREE_PE", "ATR",
+        "PTS", "REB",
+        "AST", "STL", "BLK", "FGM", "FGA", "FG_PCT", "THREE_POINTS_MADE",
+        "THREE_POINTS_ATTEMPTED", "THREE_PT_PCT", "FREE_THROWS_MADE", 
+        "FTA", "FT_PCT"
+    ]
+
+    # Select and reorder the columns
+    box_score_dataframe = box_score_dataframe[columns_to_show]
+
+    # Define the JS code for cell styles based on value ranges for C_RAM
+    cram_color_js = JsCode(
+        """
+        function(params) {
+            if (params.value >= 10) {
+                return { 'backgroundColor': 'gold' };
+            } else if (params.value >= 8.5 && params.value < 10) {
+                return { 'backgroundColor': 'silver' };
+            } else if (params.value >= 7 && params.value < 8.5) {
+                return { 'backgroundColor': 'brown' };
+            } else {
+                return { 'backgroundColor': 'transparent' };
+            }
+        }
+        """
+    )
+
+    gb = GridOptionsBuilder.from_dataframe(box_score_dataframe)
+
+    # Apply percentage formatting to specific columns
+    percentage_columns = ["FG_PCT", "THREE_PT_PCT", "FT_PCT"]
+    for col in percentage_columns:
+        gb.configure_column(col, type=["numericColumn"], valueFormatter="x.toFixed(0) + '%'")
+
+    # Apply custom cell styles using JS function for the 'C_RAM' column
+    gb.configure_column('C_RAM', cellStyle=cram_color_js)
+
+    gridOptions = gb.build()
+
+    # Calculate dynamic height
+    num_rows = len(box_score_dataframe)
+    row_height = 25
+    dynamic_height = min(max(200, 56 + num_rows * row_height), 600)
+
+    # Display using AgGrid with custom styling
+    grid_response = AgGrid(
+        box_score_dataframe,
+        gridOptions=gridOptions,
+        height=dynamic_height,
+        width='100%',
+        allow_unsafe_jscode=True,
+        columns_auto_size_mode=ColumnsAutoSizeMode.FIT_CONTENTS
+    )
+    
+    selected_rows_df = pd.DataFrame(grid_response['selected_rows'])
+    
+    return selected_rows_df
+
+
+
+def render_event_table(event_dataframe):
     cram_color_js = JsCode(
         """
         function(params) {

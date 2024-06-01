@@ -3,7 +3,7 @@ import plotly.express as px
 import pandas as pd
 
 from streamlit_extras.app_logo import add_logo
-from utils import render_table, render_ai_button
+from utils import render_event_table, render_ai_button
 from sql_queries import get_table_from_snowflake
 from static_prompts import get_comparative_prompt
 
@@ -31,7 +31,7 @@ col_data, col_radar = st.columns(2)
 with col_data:
     st.markdown("### Player Rankings")
 
-    grid_object = render_table(top_20_cram)
+    grid_object = render_event_table(top_20_cram)
     selected_rows_df = pd.DataFrame(grid_object['selected_rows'])
 
 # Create the bar chart and display it in the second column

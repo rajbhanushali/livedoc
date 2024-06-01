@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import render_player_match_ai_button, render_table
+from utils import render_player_match_ai_button, render_event_table
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
 from static_prompts import get_player_match_prompt
@@ -26,7 +26,7 @@ event_dataframe = event_dataframe.sort_values(by="C_RAM", ascending=False)
 # Display the DataFrame in the first column with color coding
 
 st.write("Player Rankings")
-render_table(event_dataframe)
+render_event_table(event_dataframe)
 
 # Create the bar chart and display it in the second column
 col1, col2 = st.columns(2)

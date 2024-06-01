@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import render_table
+from utils import render_event_table
 from sql_queries import get_table_from_snowflake
 from streamlit_extras.app_logo import add_logo
 
@@ -19,4 +19,4 @@ st.title(f"Full Leaderboard for {st.session_state.selected_event}")
 
 event_dataframe = get_table_from_snowflake(st.session_state.selected_event, st.session_state.selected_year)
 
-render_table(event_dataframe)
+render_event_table(event_dataframe)

@@ -30,7 +30,7 @@ def get_overview_prompt(total_players, avg_ram, avg_cram):
     """
 
 player_report_prompt = f"""
-  You are a youth basketball analyst. The data in this table represents a single performer from an event. Analyze the players' performance and the 5 metric suite (PSP, 3PE, FGS, ATR, DSI).
+  You are a youth basketball analyst. The data in this table represents a single performer from an event and all the relevant box score data from that event. Analyze the players' performance using the 5 metric suite (PSP, 3PE, FGS, ATR, DSI) and the box score info.
 
   Here are descriptions of the key metrics:
   - **RAM**: Overall Evaluation Score, ranging from 0 to 1000+, balancing efficiency, volume, and per-minute impact.
@@ -44,9 +44,11 @@ player_report_prompt = f"""
   Provide a summary highlighting the following sections:
 
   **PLayer Summary**
-  - In paragraph natural text, give a summary of the player and his stats, outlining box score and 5ms.
-  - Include Efficiency using fg_pct, three_pt_pct, and free_throw_pct
+  - In paragraph natural text, give a summary of the player and his stats, outlining box score and 5ms for his averages.
+  - Include Efficiency using fg_pct, three_pt_pct, and free_throw_pct for his averages.
   - Highlight strengths, weaknesses, and type of what kind of team they would best fit in / succeed with in its own paragraph. 
+  - Highlight the player's best performance (1-2) and give more context about that game, like who won, what team they played, what his box score was, and the impact he made.
+
   
   **Interesting (Easter Egg) Statistics**
   - Highlight unique or surprising stats from the player.

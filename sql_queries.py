@@ -1,6 +1,41 @@
 import streamlit as st
 import pandas as pd
 
+def get_player_box_scores(player_name, event_keyword, selected_year):
+    conn = st.connection("snowpark")
+    player_scores = pd.DataFrame()
+
+    if player_name and event_keyword and selected_year:
+        sql = f"""
+            SELECT *
+            FROM NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_MAY_21
+            WHERE 
+                PLAYER = '{player_name}' AND
+                EVENT ILIKE '{event_keyword}' AND
+                YEAR = '{selected_year}'
+        """
+        
+        player_scores = conn.query(sql)
+
+        whole_number_columns = ["PSP", "DSI", "FGS", "THREE_PE", "ATR", "RAM"]
+        percentage_columns = ["FG_PCT", "THREE_PT_PCT", "FT_PCT"]
+        
+        for col in whole_number_columns:
+            if col in player_scores.columns:
+                player_scores[col] = player_scores[col].round(0)
+
+        for col in percentage_columns:
+            if col in player_scores.columns:
+                player_scores[col] = player_scores[col].fillna(0)  # Replace NaN with 0
+                player_scores[col] = (player_scores[col] * 100).round(0)
+
+        for col in player_scores.select_dtypes(include='number').columns:
+            if col not in whole_number_columns and col not in percentage_columns:
+                player_scores[col] = player_scores[col].round(1)
+
+    return player_scores
+
+
 def get_table_from_snowflake(selected_event, selected_year):
     conn = st.connection("snowpark")
     table_response = pd.DataFrame()
