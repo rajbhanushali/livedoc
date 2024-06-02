@@ -160,10 +160,10 @@ def color_cram_value(val):
 def render_box_score_table(box_score_dataframe):
     # Filter and order columns
     columns_to_show = [
-        "PLAYER", "TEAM", "OPP", "WIN", "TEAM_SCORE", "OPP_SCORE", 
+        "DATE", "OPP", "WIN", "TEAM_SCORE", "OPP_SCORE", 
+        "PTS", "REB", "AST", "STL", "BLK",
         "RAM", "C_RAM", "PSP", "FGS", "DSI", "THREE_PE", "ATR",
-        "PTS", "REB",
-        "AST", "STL", "BLK", "FGM", "FGA", "FG_PCT", "THREE_POINTS_MADE",
+        "FGM", "FGA", "FG_PCT", "THREE_POINTS_MADE",
         "THREE_POINTS_ATTEMPTED", "THREE_PT_PCT", "FREE_THROWS_MADE", 
         "FTA", "FT_PCT"
     ]
