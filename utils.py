@@ -89,30 +89,31 @@ def plot_c_ram_bar_chart(dataframe):
 
     st.plotly_chart(fig)
 
-def plot_bar_chart(dataframe):
-    colname = dataframe.columns[1]
-    colname = str(colname)
+def plot_player_chart(dataframe):
+   plot_bar_chart(dataframe, dataframe.columns[1], 'PLAYER')
+
+def plot_bar_chart(dataframe, x_col, y_col):
 
     # Define the custom color scale
     colors = ['#000000', '#CD7F32', '#C0C0C0', '#FFD700']  # Grey to Bronze to Silver to Gold
     
     # Normalize the values in the column for the continuous color scale
-    dataframe['Normalized'] = (dataframe[colname] - dataframe[colname].min()) / (dataframe[colname].max() - dataframe[colname].min())
+    dataframe['Normalized'] = (dataframe[x_col] - dataframe[x_col].min()) / (dataframe[x_col].max() - dataframe[x_col].min())
 
     fig = px.bar(
         dataframe,
-        x=colname,
-        y="PLAYER",
+        x=x_col,
+        y=y_col,
         orientation='h',
         color='Normalized',
         color_continuous_scale=colors,
         template='plotly_white',
-        hover_data={colname: True, 'PLAYER': True, 'Normalized': False}  # Include only desired columns in hover data
+        hover_data={x_col: True, y_col: True, 'Normalized': False}  # Include only desired columns in hover data
     )
     fig.update_layout(
-        xaxis_title=colname,
+        xaxis_title=x_col,
         xaxis_title_font_size=18,
-        yaxis_title='PLAYER',
+        yaxis_title=y_col,
         yaxis_title_font_size=18,
         yaxis={'categoryorder': 'total ascending'},
         margin=dict(l=20, r=20, t=30, b=20),  # Adjust margins
@@ -160,10 +161,10 @@ def color_cram_value(val):
 def render_box_score_table(box_score_dataframe):
     # Filter and order columns
     columns_to_show = [
-        "DATE", "OPP", "WIN", "TEAM_SCORE", "OPP_SCORE", 
-        "PTS", "REB", "AST", "STL", "BLK",
+        "PLAYER", "TEAM", "OPP", "WIN", "TEAM_SCORE", "OPP_SCORE", 
         "RAM", "C_RAM", "PSP", "FGS", "DSI", "THREE_PE", "ATR",
-        "FGM", "FGA", "FG_PCT", "THREE_POINTS_MADE",
+        "PTS", "REB",
+        "AST", "STL", "BLK", "FGM", "FGA", "FG_PCT", "THREE_POINTS_MADE",
         "THREE_POINTS_ATTEMPTED", "THREE_PT_PCT", "FREE_THROWS_MADE", 
         "FTA", "FT_PCT"
     ]
@@ -281,7 +282,7 @@ def render_event_table(event_dataframe):
     # Calculate dynamic height
     num_rows = len(event_dataframe)
     row_height = 25
-    dynamic_height = min(max(200, 56 + num_rows * row_height), 400)
+    dynamic_height = min(max(200, 56 + num_rows * row_height), 250)
 
     # Display using AgGrid with custom styling
     return AgGrid(
@@ -309,7 +310,7 @@ def render_ai_button(dataframe, prompt):
     """, unsafe_allow_html=True)
 
   # Center the button using the custom CSS
-  if st.button("Generate AI Analysis"):
+  if st.button("Get AI Analysis"):
     call_gpt_and_stream_response(dataframe, prompt)
 
 def render_player_match_ai_button(event_dataframe, player1, player2, prompt):

@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import plot_bar_chart, render_ai_button
+from utils import plot_player_chart, render_ai_button
 from sql_queries import get_player_averages_dataframe
 from streamlit_extras.app_logo import add_logo
 from static_prompts import get_skill_leader_prompt
@@ -30,7 +30,7 @@ with col1:
     st.write(f"Top {column_to_plot} for {st.session_state.selected_event}")
     top_10 = event_dataframe.nlargest(10, column_to_plot)[['PLAYER', column_to_plot]]
     top_player = top_10.iloc[0,0]
-    plot_bar_chart(top_10)
+    plot_player_chart(top_10)
 
 avg_fgs_delta = round(event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"FGS"].values[0] - event_dataframe['FGS'].mean(),2)
 avg_dsi_delta = round(event_dataframe.loc[event_dataframe['PLAYER'] == top_player,"DSI"].values[0] - event_dataframe['DSI'].mean(),2)
