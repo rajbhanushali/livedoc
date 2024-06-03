@@ -296,22 +296,6 @@ def render_event_table(event_dataframe):
 
 
 def render_team_table(event_dataframe):
-    cram_color_js = JsCode(
-        """
-        function(params) {
-            if (params.value >= 10) {
-                return { 'backgroundColor': 'gold' };
-            } else if (params.value >= 8.5 && params.value < 10) {
-                return { 'backgroundColor': 'silver' };
-            } else if (params.value >= 7 && params.value < 8.5) {
-                return { 'backgroundColor': 'brown' };
-            } else {
-                return { 'backgroundColor': 'transparent' };
-            }
-        }
-        """
-    )
-
     max_values = event_dataframe.iloc[:, 1:].max()
     highlight_max = JsCode(
         """
@@ -336,12 +320,15 @@ def render_team_table(event_dataframe):
 
     gb = GridOptionsBuilder.from_dataframe(event_dataframe)
 
-
-
     # Apply highlight for max values
     for col in event_dataframe.columns[1:]:  # Exclude the checkbox column from styling
         if col != 'C_RAM':
             gb.configure_column(col, cellStyle=highlight_max)
+    
+    # Apply percentage formatting to specific columns
+    percentage_columns = ["FG%", "3FG%", "FT%"]
+    for col in percentage_columns:
+        gb.configure_column(col, type=["numericColumn"], valueFormatter="x.toFixed(0) + '%'")
 
     gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren=True)
     gridOptions = gb.build()
