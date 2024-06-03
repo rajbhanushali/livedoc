@@ -1,8 +1,8 @@
 import streamlit as st
 import plotly.express as px
-from streamlit_extras.app_logo import add_logo
 
-from utils import render_ai_button, render_box_score_table
+from streamlit_extras.app_logo import add_logo
+from utils import render_ai_button, render_box_score_table, export_to_pdf_button
 from sql_queries import get_player_averages_dataframe, get_player_box_scores
 from static_prompts import player_report_prompt
 
@@ -30,6 +30,9 @@ selected_player = st.selectbox(
 )
 
 player_box_score_dataframe = get_player_box_scores(selected_player, st.session_state.selected_event, st.session_state.selected_year)
+selected_player_row = event_averages_dataframe[event_averages_dataframe["PLAYER"] == selected_player]
+
+st.dataframe(selected_player_row)
 
 col_data, col_radar = st.columns(2)
 
@@ -41,7 +44,6 @@ with col_data:
 # Create the bar chart and display it in the second column
 with col_radar:
     st.markdown("#### Player 5MS")
-    selected_player_row = event_averages_dataframe[event_averages_dataframe["PLAYER"] == selected_player]
 
     categories = ['PSP', 'ATR', 'DSI', 'FGS', 'THREE_PE']
     radar_data = selected_player_row.melt(id_vars=['PLAYER'], value_vars=categories, var_name='categories', value_name='values')
@@ -79,3 +81,5 @@ with col_radar:
 # Description at the bottom of the page
 
 render_ai_button(player_box_score_dataframe, player_report_prompt)
+
+export_to_pdf_button(selected_player, player_box_score_dataframe)

@@ -2,8 +2,10 @@ import streamlit as st
 import pandas as pd
 import openai
 import plotly.express as px
-from openai import OpenAI
 import altair as alt
+
+from fpdf import FPDF
+from openai import OpenAI
 from st_aggrid import AgGrid, GridOptionsBuilder, JsCode, ColumnsAutoSizeMode
 
 def call_gpt_and_stream_response(dataframe: pd.DataFrame, prompt: str) -> str:
@@ -385,3 +387,39 @@ def render_player_match_ai_button(event_dataframe, player1, player2, prompt):
     st.write(f'You selected: {player1} and {player2}')
     selected_players_averages = event_dataframe[event_dataframe['PLAYER'].isin([player1, player2])]
     call_gpt_and_stream_response(selected_players_averages, prompt)
+
+def export_to_pdf_button(selected_player, player_box_score_dataframe):
+
+    # Function to create PDF using fpdf
+    def create_pdf(player_name, box_score_df):
+        pdf = FPDF()
+        pdf.add_page()
+        
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 10, txt=f"Player Event Report for {st.session_state.selected_event}", ln=True, align='C')
+        pdf.cell(200, 10, txt=f"Player: {player_name}", ln=True, align='L')
+        
+        pdf.ln(10)
+        pdf.set_font("Arial", size=10)
+        
+        # Add table header
+        for column in box_score_df.columns:
+            pdf.cell(10, 10, column, border=1)
+        pdf.ln()
+        
+        # Add table rows
+        for index, row in box_score_df.iterrows():
+            for item in row:
+                pdf.cell(10, 10, str(item), border=1)
+            pdf.ln()
+        
+        pdf_output_path = '/tmp/player_report.pdf'
+        pdf.output(pdf_output_path)
+        return pdf_output_path
+        
+    # Button to generate and download the PDF report
+    if st.button("Export Report as PDF"):
+        pdf_path = create_pdf(selected_player, player_box_score_dataframe)
+        with open(pdf_path, 'rb') as f:
+            pdf_data = f.read()
+        st.download_button(label="Download Player Report", data=pdf_data, file_name="player_report.pdf", mime='application/pdf')

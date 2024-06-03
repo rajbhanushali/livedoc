@@ -87,3 +87,4 @@ urllib3
 validators==0.22.0
 yarl
 zipp==3.16.2
+fpdf
