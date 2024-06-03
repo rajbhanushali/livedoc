@@ -67,7 +67,7 @@ with col_radar:
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=-0.1,
+            y=-0.2,
             xanchor="center",
             x=0.5
         ),
