@@ -77,7 +77,7 @@ team_report_prompt = f"""
 
   Provide a summary highlighting the following sections:
 
-  **PLaTeamyer Summary**
+  **Team Summary**
   - In paragraph natural text, give a summary of the team and their stats.
   - Highlight strengths and weaknesses in its own paragraph. 
   - Highlight the teams's best performance (1-2) and give more context about that game, like who won, what team they played, what his box score was, and an analysis about the game.

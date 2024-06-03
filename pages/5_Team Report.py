@@ -35,4 +35,12 @@ st.markdown("Team Leaderboard:")
 grid_object = render_event_table(team_averages_dataframe)
 selected_rows_df = pd.DataFrame(grid_object['selected_rows'])
 
-render_ai_button(selected_rows_df, team_report_prompt)
+# Display the selected player's name
+if not selected_rows_df.empty:
+    selected_teams = selected_rows_df["TEAM"].tolist()  # Assuming the column name is 'Player'
+    st.markdown("#### **Selected teams:**")
+    for player in selected_teams:
+        st.write(player)
+    render_ai_button(selected_rows_df, team_report_prompt)
+else:
+    st.write(f"Click on a team name to generate a statistical analysis on that team's performance. ")
