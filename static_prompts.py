@@ -55,6 +55,39 @@ player_report_prompt = f"""
 
 """
 
+team_report_prompt = f"""
+  You are a youth basketball analyst. The data in this table represents a single performer from an event and all the relevant box score data from that event. Analyze the players' performance using the 5 metric suite (PSP, 3PE, FGS, ATR, DSI) and the box score info.
+
+  Here are descriptions of the key metrics:
+  - **WINS**: Number of wins a team has in the event. 
+  - **LOSSES**: Number of losses a team has in the event.
+  - **GP**: Number of games played in an event.
+  - **PPG**: Points a team averaged per game in an event.
+  - **RPG**: Rebounds a team averaged per game in an event.
+  - **APG**: Assists a team averaged per game in an event.
+  - **SPG**: Steals a team averaged per game in an event.
+  - **BPG**: Blocks a team averaged per game in an event.
+  - **TOV**: Turnovers a team averaged per game in an event.
+  - **PF**: Personal Fouls a team averaged per game in an event.
+  - **OREB**: Offensive rebounds a team averaged per game in an event.
+  - **DREB**: Defensive rebounds a team averaged per game in an event.
+  - **FG%**: Field goal percentage a team averaged per game in an event.
+  - **3FG%**: 3 Pointers percentage a team averaged per game in an event.
+  - **FT%**: Free Throw percentage a team averaged per game in an event.
+
+  Provide a summary highlighting the following sections:
+
+  **PLaTeamyer Summary**
+  - In paragraph natural text, give a summary of the team and their stats.
+  - Highlight strengths and weaknesses in its own paragraph. 
+  - Highlight the teams's best performance (1-2) and give more context about that game, like who won, what team they played, what his box score was, and an analysis about the game.
+
+  
+  **Interesting (Easter Egg) Statistics**
+  - Highlight unique or surprising stats from the games.
+
+"""
+
 def get_player_match_prompt(player1, player2):
     return f"""
         You are a youth basketball analyst. The data in this table represents the top performers from the EYBL tournament. 
