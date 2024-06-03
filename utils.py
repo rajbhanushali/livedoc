@@ -282,7 +282,7 @@ def render_event_table(event_dataframe):
     # Calculate dynamic height
     num_rows = len(event_dataframe)
     row_height = 25
-    dynamic_height = min(max(200, 56 + num_rows * row_height), 250)
+    dynamic_height = min(max(200, 56 + num_rows * row_height), 400)
 
     # Display using AgGrid with custom styling
     return AgGrid(
@@ -310,7 +310,7 @@ def render_ai_button(dataframe, prompt):
     """, unsafe_allow_html=True)
 
   # Center the button using the custom CSS
-  if st.button("Get AI Analysis"):
+  if st.button("Generate AI Analysis"):
     call_gpt_and_stream_response(dataframe, prompt)
 
 def render_player_match_ai_button(event_dataframe, player1, player2, prompt):
