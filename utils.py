@@ -295,6 +295,74 @@ def render_event_table(event_dataframe):
     )
 
 
+def render_team_table(event_dataframe):
+    cram_color_js = JsCode(
+        """
+        function(params) {
+            if (params.value >= 10) {
+                return { 'backgroundColor': 'gold' };
+            } else if (params.value >= 8.5 && params.value < 10) {
+                return { 'backgroundColor': 'silver' };
+            } else if (params.value >= 7 && params.value < 8.5) {
+                return { 'backgroundColor': 'brown' };
+            } else {
+                return { 'backgroundColor': 'transparent' };
+            }
+        }
+        """
+    )
+
+    max_values = event_dataframe.iloc[:, 1:].max()
+    highlight_max = JsCode(
+        """
+        function(params) {
+            var maxValues = %s;
+            if (params.value == maxValues[params.colDef.field]) {
+                return {
+                    'color': 'white',
+                    'backgroundColor': 'green'
+                }
+            }
+            return {
+                'color': 'white',
+                'backgroundColor': 'transparent'
+            }
+        }
+        """ % max_values.to_dict()
+    )
+
+    # Add a checkbox column at the first position
+    event_dataframe.insert(0, "", False)
+
+    gb = GridOptionsBuilder.from_dataframe(event_dataframe)
+
+
+
+    # Apply highlight for max values
+    for col in event_dataframe.columns[1:]:  # Exclude the checkbox column from styling
+        if col != 'C_RAM':
+            gb.configure_column(col, cellStyle=highlight_max)
+
+    gb.configure_selection('multiple', use_checkbox=True, groupSelectsChildren=True)
+    gridOptions = gb.build()
+    
+    #gb.configure_grid_options(autoSizeColumnsOnLoad=True)
+
+    # Calculate dynamic height
+    num_rows = len(event_dataframe)
+    row_height = 25
+    dynamic_height = min(max(200, 56 + num_rows * row_height), 400)
+
+    # Display using AgGrid with custom styling
+    return AgGrid(
+        event_dataframe,
+        gridOptions=gridOptions,
+        height=dynamic_height,
+        width='100%',
+        allow_unsafe_jscode=True,
+        columns_auto_size_mode=None
+    )
+
 def render_ai_button(dataframe, prompt):
   # Custom CSS to center the button
   st.markdown("""

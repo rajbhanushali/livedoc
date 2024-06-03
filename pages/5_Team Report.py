@@ -3,7 +3,7 @@ import plotly.express as px
 from streamlit_extras.app_logo import add_logo
 import pandas as pd
 
-from utils import render_ai_button, render_box_score_table, render_event_table, plot_bar_chart
+from utils import render_ai_button, render_box_score_table, render_team_table, plot_bar_chart
 from sql_queries import get_team_event_dataframe
 from static_prompts import team_report_prompt
 
@@ -32,7 +32,7 @@ plot_bar_chart(team_averages_dataframe.nlargest(10, selected_stat), selected_sta
 
 #st.dataframe(team_averages_dataframe)
 st.markdown("Team Leaderboard:")
-grid_object = render_event_table(team_averages_dataframe)
+grid_object = render_team_table(team_averages_dataframe)
 selected_rows_df = pd.DataFrame(grid_object['selected_rows'])
 
 # Display the selected player's name
