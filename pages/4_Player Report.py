@@ -82,4 +82,4 @@ with col_radar:
 
 render_ai_button(player_box_score_dataframe, player_report_prompt)
 
-export_to_pdf_button(selected_player, player_box_score_dataframe)
+export_to_pdf_button(selected_player, player_box_score_dataframe, selected_player_row)

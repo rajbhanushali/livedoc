@@ -163,7 +163,7 @@ def color_cram_value(val):
 def render_box_score_table(box_score_dataframe):
     # Filter and order columns
     columns_to_show = [
-        "PLAYER", "TEAM", "OPP", "WIN", "TEAM_SCORE", "OPP_SCORE", 
+        "PLAYER", "TEAM", "MINUTES", "OPP", "WIN", "TEAM_SCORE", "OPP_SCORE", 
         "RAM", "C_RAM", "PSP", "FGS", "DSI", "THREE_PE", "ATR",
         "PTS", "REB",
         "AST", "STL", "BLK", "FGM", "FGA", "FG_PCT", "THREE_POINTS_MADE",
@@ -183,7 +183,7 @@ def render_box_score_table(box_score_dataframe):
             } else if (params.value >= 8.5 && params.value < 10) {
                 return { 'backgroundColor': 'silver' };
             } else if (params.value >= 7 && params.value < 8.5) {
-                return { 'backgroundColor': 'brown' };
+                return { 'backgroundColor': '#CD7F32' };
             } else {
                 return { 'backgroundColor': 'transparent' };
             }
@@ -388,30 +388,177 @@ def render_player_match_ai_button(event_dataframe, player1, player2, prompt):
     selected_players_averages = event_dataframe[event_dataframe['PLAYER'].isin([player1, player2])]
     call_gpt_and_stream_response(selected_players_averages, prompt)
 
-def export_to_pdf_button(selected_player, player_box_score_dataframe):
+def export_to_pdf_button(selected_player, player_box_score_dataframe, selected_player_row):
 
-    # Function to create PDF using fpdf
-    def create_pdf(player_name, box_score_df):
-        pdf = FPDF()
-        pdf.add_page()
+    def header(pdf):
+    # Add the header
+        pdf.set_font("Arial", 'B', 20)
+        pdf.cell(0, 10, "Player Event Breakdown", ln=True, align='R')
+
+    def add_title_section(pdf, player_name, team_name, event_name, games_played, minutes_per_game):
+        # Add the player's name and team on the left, and the event name on the right
+        pdf.set_font("Arial", 'B', 16)
+        left_cell_width = pdf.get_string_width(f"{player_name} - {team_name}") + 2
+        right_cell_width = pdf.get_string_width(event_name) + 2
         
-        pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt=f"Player Event Report for {st.session_state.selected_event}", ln=True, align='C')
-        pdf.cell(200, 10, txt=f"Player: {player_name}", ln=True, align='L')
+        pdf.cell(left_cell_width, 10, f"{player_name} - {team_name}", ln=False, align='L')
+        pdf.set_x(pdf.w - right_cell_width - pdf.r_margin)  # Position the right-aligned cell
+        pdf.cell(right_cell_width, 10, event_name, ln=True, align='R')
         
+        # Add games played and minutes per game on the left
+        pdf.set_font("Arial", '', 12)
+        details_width = pdf.get_string_width(f"{games_played} GAMES PLAYED | {minutes_per_game} MINUTES PER GAME") + 2
+        pdf.cell(details_width, 10, f"{games_played} GAMES PLAYED | {minutes_per_game} MINUTES PER GAME", ln=True, align='L')
         pdf.ln(10)
-        pdf.set_font("Arial", size=10)
+
+    def add_metrics_section(pdf, ram, cram):
+        # Add metrics section
+        pdf.set_font("Arial", 'B', 20)
+        pdf.cell(42, 20, f"{ram} RAM", ln=False, align='C', border=1)
+        pdf.cell(42, 20, f"{cram} C-RAM", ln=False, align='C', border=1)
+
+    def add_breakdowns(pdf, stat_breakdown_df, skill_breakdown_df):
+        # Add stat breakdown table
+        pdf.set_font("Arial", 'B', 12)
+        pdf.cell(0, 10, "STAT BREAKDOWN", ln=True, align='L')
+        pdf.set_font("Arial", '', 10)
         
-        # Add table header
-        for column in box_score_df.columns:
-            pdf.cell(10, 10, column, border=1)
+        # Calculate column widths based on content
+        col_widths = []
+        for col in stat_breakdown_df.columns:
+            max_width = pdf.get_string_width(col) + 4  # Column header width
+            for value in stat_breakdown_df[col]:
+                max_width = max(max_width, pdf.get_string_width(str(value)) + 4)
+            col_widths.append(max_width)
+        
+        row_height = pdf.font_size * 1.5
+        
+        # Header
+        for i, column in enumerate(stat_breakdown_df.columns):
+            pdf.cell(col_widths[i], row_height, column, border=1, align='C')
         pdf.ln()
         
-        # Add table rows
-        for index, row in box_score_df.iterrows():
-            for item in row:
-                pdf.cell(10, 10, str(item), border=1)
+        # Rows
+        for index, row in stat_breakdown_df.iterrows():
+            for i, item in enumerate(row):
+                pdf.cell(col_widths[i], row_height, str(item), border=1, align='C')
             pdf.ln()
+        
+        pdf.ln(4)
+        
+        # Add skill breakdown table transposed
+        pdf.set_font("Arial", 'B', 12)
+        pdf.cell(0, 10, "SKILL BREAKDOWN", ln=True, align='L')
+        pdf.set_font("Arial", '', 10)
+        
+        transposed_skill_df = skill_breakdown_df.T
+        transposed_skill_df.columns = transposed_skill_df.iloc[0]
+        transposed_skill_df = transposed_skill_df[1:]
+        
+        # Calculate column widths based on content
+        col_widths = []
+        for col in transposed_skill_df.columns:
+            max_width = pdf.get_string_width(col) + 4  # Column header width
+            for value in transposed_skill_df[col]:
+                max_width = max(max_width, pdf.get_string_width(str(value)) + 4)
+            col_widths.append(max_width)
+        
+        # Header
+        for i, column in enumerate(transposed_skill_df.columns):
+            pdf.cell(col_widths[i], row_height, column, border=1, align='C')
+        pdf.ln(row_height)
+        
+        # Rows
+        for index, row in transposed_skill_df.iterrows():
+            for i, item in enumerate(row):
+                pdf.cell(col_widths[i], row_height, str(item), border=1, align='C')
+            pdf.ln(row_height)
+        
+        pdf.ln(5)
+
+    def add_game_log(pdf, game_log_df):
+        # Add game log table
+        pdf.set_font("Arial", 'B', 12)
+        pdf.cell(0, 10, "GAME LOG", ln=True, align='L')
+        pdf.set_font("Arial", '', 10)
+        
+        # Calculate column widths based on content
+        col_widths = []
+        for col in game_log_df.columns:
+            max_width = pdf.get_string_width(col) + 4  # Column header width
+            for value in game_log_df[col]:
+                max_width = max(max_width, pdf.get_string_width(str(value)) + 4)
+            col_widths.append(max_width)
+        
+        # Header
+        for i, column in enumerate(game_log_df.columns):
+            pdf.cell(col_widths[i], 10, column, border=1, align='C')
+        pdf.ln()
+        
+        # Rows
+        for index, row in game_log_df.iterrows():
+            for i, item in enumerate(row):
+                pdf.cell(col_widths[i], 10, str(item), border=1, align='C')
+            pdf.ln()
+
+    # Function to create PDF using fpdf
+    def create_pdf(player_name, box_score_df, selected_player_row):
+
+        #Grab necessary fields for data population
+        YEAR = str(st.session_state.selected_year)
+        EVENT = str(st.session_state.selected_event)
+        GAMES_PLAYED = selected_player_row['GAMES_PLAYED'].iloc[0]
+        MINUTES = selected_player_row['MIN'].iloc[0]
+        TEAM = str(box_score_df['TEAM'].iloc[0])
+        RAM = selected_player_row['RAM'].iloc[0]
+        C_RAM = selected_player_row['C_RAM'].iloc[0]
+
+        per_game_stat_breakdown = selected_player_row[['PPG', 'RPG', 'APG', 'SPG', 'BPG', 'FG_PCT', 'THREE_PT_PCT', 'FT_PCT']]
+        per_40_stat_breakdown = pd.DataFrame(columns=['PPG', 'RPG', 'APG', 'SPG', 'BPG', 'FG_PCT', 'THREE_PT_PCT', 'FT_PCT'])
+        per_40_stat_breakdown[['PPG', 'RPG', 'APG', 'SPG', 'BPG']] = round((per_game_stat_breakdown[['PPG', 'RPG', 'APG', 'SPG', 'BPG']]/MINUTES)*40, 1)
+        per_40_stat_breakdown[['FG_PCT', 'THREE_PT_PCT', 'FT_PCT']] = per_game_stat_breakdown[['FG_PCT', 'THREE_PT_PCT', 'FT_PCT']]
+        per_game_stat_breakdown['Category'] = 'PER GAME'
+        per_40_stat_breakdown['Category'] = 'PER 40 MINS'
+
+        col = per_game_stat_breakdown.pop('Category')
+        per_game_stat_breakdown.insert(0, 'Category', col)
+
+        col = per_40_stat_breakdown.pop('Category')
+        per_40_stat_breakdown.insert(0, 'Category', col)
+
+        stat_breakdown_df = pd.concat([per_game_stat_breakdown, per_40_stat_breakdown], axis=0)
+
+        skill_breakdown_df = pd.DataFrame({
+            '5 Metric Suite': ['Pure Scoring Prowess', '3-Point Efficiency', 'Floor General Skills', 'Big Man Strengths', 'Defensive Statistical Impact'],
+            'Score': list(selected_player_row[['PSP', 'THREE_PE', 'FGS', 'ATR', 'DSI']].iloc[0].astype(int))
+        })
+
+        game_log_df = pd.DataFrame(columns=['TEAMS', 'MP', 'FG', '3PT', 'FT', 'PTS', 'AST', 'REB', 'STL', 'BLK'])
+        game_log_df['FG'] = box_score_df['FGM'].astype(str) + '-' + box_score_df['FGA'].astype(str)
+        game_log_df['3PT'] = box_score_df['THREE_POINTS_MADE'].astype(str) + '-' + box_score_df['THREE_POINTS_ATTEMPTED'].astype(str)
+        game_log_df['FT'] = box_score_df['FREE_THROWS_MADE'].astype(str) + '-' + box_score_df['FTA'].astype(str)
+        game_log_df[['TEAMS', 'MP', 'PTS', 'AST', 'REB', 'STL', 'BLK']] = box_score_df[['OPP', 'MINUTES', 'PTS', 'AST', 'REB', 'STL', 'BLK']]
+
+        pdf = FPDF(orientation='L', unit='mm', format='A4')
+        pdf.add_page()
+        
+        # Add header
+        header(pdf)
+        
+        # Add the title section
+        add_title_section(pdf, selected_player, TEAM, YEAR + " - " + EVENT, GAMES_PLAYED, MINUTES)
+        
+        pdf.line(10, pdf.get_y()-8, 287, pdf.get_y()-8)
+
+        # Add metrics section
+        add_metrics_section(pdf, RAM, C_RAM)
+        pdf.ln(25)
+        
+        # Add stat breakdown
+        add_breakdowns(pdf, stat_breakdown_df, skill_breakdown_df)
+
+        # Add game log
+        add_game_log(pdf, game_log_df)
         
         pdf_output_path = '/tmp/player_report.pdf'
         pdf.output(pdf_output_path)
@@ -419,7 +566,7 @@ def export_to_pdf_button(selected_player, player_box_score_dataframe):
         
     # Button to generate and download the PDF report
     if st.button("Export Report as PDF"):
-        pdf_path = create_pdf(selected_player, player_box_score_dataframe)
+        pdf_path = create_pdf(selected_player, player_box_score_dataframe, selected_player_row)
         with open(pdf_path, 'rb') as f:
             pdf_data = f.read()
         st.download_button(label="Download Player Report", data=pdf_data, file_name="player_report.pdf", mime='application/pdf')

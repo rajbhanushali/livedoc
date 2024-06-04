@@ -11,7 +11,7 @@ def get_team_event_dataframe(event_keyword, selected_year):
                 UNIQUE_GAME_ID,
                 MAX(WIN) AS WIN
             FROM
-                NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_MAY_21
+                NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_JUNE_3
             WHERE
                 EVENT ILIKE '{event_keyword}'
                 AND YEAR = '{selected_year}'
@@ -43,7 +43,7 @@ def get_team_event_dataframe(event_keyword, selected_year):
                 SUM(FREE_THROWS_MADE) AS TOTAL_FTM,
                 SUM(FTA) AS TOTAL_FTA
             FROM
-                NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_MAY_21
+                NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_JUNE_3
             WHERE
                 EVENT ILIKE '{event_keyword}'
                 AND YEAR = '{selected_year}'
@@ -136,7 +136,7 @@ def get_player_box_scores(player_name, event_keyword, selected_year):
     if player_name and event_keyword and selected_year:
         sql = f"""
             SELECT *
-            FROM NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_MAY_21
+            FROM NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_JUNE_3
             WHERE 
                 PLAYER = '{player_name}' AND
                 EVENT ILIKE '{event_keyword}' AND
@@ -199,6 +199,7 @@ def get_sql_query_from_event(event_name, selected_year):
         SELECT 
             PLAYER,
             COUNT(*) AS GAMES_PLAYED,
+            AVG(MINUTES) AS MIN,
             AVG(RAM) AS RAM,
             AVG(C_RAM) AS C_RAM,
             AVG(PSP) AS PSP,
@@ -214,7 +215,7 @@ def get_sql_query_from_event(event_name, selected_year):
             SUM(FGM) / NULLIF(SUM(FGA), 0) AS FG_PCT,
             SUM(THREE_POINTS_MADE) / NULLIF(SUM(THREE_POINTS_ATTEMPTED), 0) AS THREE_PT_PCT,
             SUM(FREE_THROWS_MADE) / NULLIF(SUM(FTA), 0) AS FT_PCT
-        FROM NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_MAY_21
+        FROM NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_JUNE_3
         WHERE EVENT ILIKE '{event_keyword}' AND YEAR = {selected_year}
         GROUP BY PLAYER
         ORDER BY RAM DESC
