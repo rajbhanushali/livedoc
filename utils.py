@@ -38,6 +38,28 @@ def call_gpt_and_stream_response(dataframe: pd.DataFrame, prompt: str) -> str:
     # Extract and return the description from the response
     return response
 
+def get_c_ram_hex(c_ram):
+    # Define the custom color scale
+    colors = {
+        'Gold': '#D4AF37',
+        'Silver': '#C0C0C0',
+        'Bronze': '#CD7F32',
+        'Not Rated': '#000000'
+    }
+
+    if c_ram > 10:
+        return colors['Gold']
+    elif c_ram > 8.5:
+        return colors['Silver']
+    elif c_ram > 7:
+        return colors['Bronze']
+    else:
+        return colors['Not Rated']
+    
+def hex_to_rgb(hex_color):
+    hex_color = hex_color.lstrip('#')
+    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+
 def plot_c_ram_bar_chart(dataframe):
     colname = "C_RAM"
 
@@ -395,6 +417,35 @@ def export_to_pdf_button(selected_player, player_box_score_dataframe, selected_p
         pdf.set_font("Arial", 'B', 20)
         pdf.cell(0, 10, "Player Event Breakdown", ln=True, align='R')
 
+    def draw_circle(pdf, x, y, radius, text, bg_color, text_color):
+
+        # Draw the circle (ellipse with equal width and height)
+        pdf.set_fill_color(*bg_color)
+        pdf.ellipse(x - radius, y - radius, 2 * radius, 2 * radius, 'F')
+
+        # Set text color
+        pdf.set_text_color(*text_color)
+        pdf.set_font("Arial", 'B', size=24)
+
+        # Calculate text width and height for centering
+        text_lines = text.split('\n')
+        text_height = pdf.font_size_pt / pdf.k  # Height of a single line of text
+
+        # Center the text vertically
+        total_text_height = text_height * len(text_lines)
+        y_text = y - total_text_height / 2
+
+        # Add the text, centered in the circle
+        for line in text_lines:
+            text_width = pdf.get_string_width(line)
+            pdf.set_xy(x - text_width / 2, y_text)
+            pdf.cell(text_width, text_height, line, align='C')
+            y_text += text_height
+
+        # reset text settings to black and size 10
+        pdf.set_text_color(0,0,0)
+        pdf.set_font("Arial", size=10)
+
     def add_title_section(pdf, player_name, team_name, event_name, games_played, minutes_per_game):
         # Add the player's name and team on the left, and the event name on the right
         pdf.set_font("Arial", 'B', 16)
@@ -412,10 +463,66 @@ def export_to_pdf_button(selected_player, player_box_score_dataframe, selected_p
         pdf.ln(10)
 
     def add_metrics_section(pdf, ram, cram):
-        # Add metrics section
+
+        # Draw circular cells with text in the center
+        # Set the coordinates and radius for the circles
+        x_start = pdf.get_x() + pdf.l_margin + 8
+        y_start = pdf.get_y() + 15
+        radius = 18
+
+        # Set size of RAM and C-RAM score text
         pdf.set_font("Arial", 'B', 20)
-        pdf.cell(42, 20, f"{ram} RAM", ln=False, align='C', border=1)
-        pdf.cell(42, 20, f"{cram} C-RAM", ln=False, align='C', border=1)
+
+        # Draw RAM circle
+        draw_circle(pdf, x_start, y_start, radius, f"{ram}\nRAM", bg_color=(0, 0, 0), text_color=(255, 255, 255))  # black background, white text
+
+        # Draw C-RAM circle
+        x_start += 2 * radius + 5  # Adjust x position to the right of the previous circle with padding
+        draw_circle(pdf, x_start, y_start, radius, f"{cram}\nC-RAM", bg_color=hex_to_rgb(get_c_ram_hex(cram)), text_color=(255, 255, 255))  # medal background, white text
+
+        performance_metrics_explained_x = x_start+radius+5
+        performance_metrics_explained_y = y_start-radius
+
+        # Custom multi-line text with mixed formatting
+        text_parts = [
+            ("PERFORMANCE METRICS EXPLAINED:\n", 'bold', 12),
+            ("RAM: Overall performance metric scaling towards 1,000.\n", 'bold', 9),
+            ("Uses box-score performance to determine on-court production\n", 'normal', 9),
+            ("C-RAM: Contextual performance indicator scaling past 10.\n", 'bold', 9),
+            ("Curves player performance against event average to determine\nrelative standing", 'normal', 9),
+            ("\nVisit cerebrosports.com/about for more on Cerebro's performance metrics", 'normal', 9)
+        ]
+
+        # Set position for the text
+        pdf.set_xy(performance_metrics_explained_x, performance_metrics_explained_y)
+
+        # Add the formatted text
+        for part, style, size in text_parts:
+            if style == 'bold':
+                pdf.set_font("Arial", 'B', size=size)
+            else:
+                pdf.set_font("Arial", size=size)
+            pdf.set_x(performance_metrics_explained_x)
+            pdf.multi_cell(0, 5, part, align='L')
+
+        pdf.set_font("Arial", size=10)
+
+        pdf.set_y(performance_metrics_explained_y)
+        
+        width_in_mm = 120
+        height_in_mm = 90
+
+        # Calculate the x position for the image to align with the right side
+        page_width = pdf.w - pdf.r_margin
+        x_position = page_width - width_in_mm
+
+        radar_x = x_position+20
+        radar_y = pdf.get_y()-8
+
+        # Insert the Plotly chart image on the right side aligned with the cell
+        pdf.image('/tmp/player_radar_chart.png', x=radar_x, y=radar_y, w=width_in_mm, h=height_in_mm)
+
+        pdf.set_y(radar_y+25)
 
     def add_breakdowns(pdf, stat_breakdown_df, skill_breakdown_df):
         # Add stat breakdown table
@@ -530,14 +637,14 @@ def export_to_pdf_button(selected_player, player_box_score_dataframe, selected_p
 
         skill_breakdown_df = pd.DataFrame({
             '5 Metric Suite': ['Pure Scoring Prowess', '3-Point Efficiency', 'Floor General Skills', 'Big Man Strengths', 'Defensive Statistical Impact'],
-            'Score': list(selected_player_row[['PSP', 'THREE_PE', 'FGS', 'ATR', 'DSI']].iloc[0].astype(int))
+            'Score': list(selected_player_row[['PSP', '3PE', 'FGS', 'ATR', 'DSI']].iloc[0].astype(int))
         })
 
-        game_log_df = pd.DataFrame(columns=['TEAMS', 'MP', 'FG', '3PT', 'FT', 'PTS', 'AST', 'REB', 'STL', 'BLK'])
+        game_log_df = pd.DataFrame(columns=['TEAMS', 'MP', 'FG', '3PT', 'FT', 'PTS', 'REB', 'AST', 'STL', 'BLK'])
         game_log_df['FG'] = box_score_df['FGM'].astype(str) + '-' + box_score_df['FGA'].astype(str)
         game_log_df['3PT'] = box_score_df['THREE_POINTS_MADE'].astype(str) + '-' + box_score_df['THREE_POINTS_ATTEMPTED'].astype(str)
         game_log_df['FT'] = box_score_df['FREE_THROWS_MADE'].astype(str) + '-' + box_score_df['FTA'].astype(str)
-        game_log_df[['TEAMS', 'MP', 'PTS', 'AST', 'REB', 'STL', 'BLK']] = box_score_df[['OPP', 'MINUTES', 'PTS', 'AST', 'REB', 'STL', 'BLK']]
+        game_log_df[['TEAMS', 'MP', 'PTS', 'REB', 'AST', 'STL', 'BLK']] = box_score_df[['OPP', 'MINUTES', 'PTS', 'REB', 'AST', 'STL', 'BLK']]
 
         pdf = FPDF(orientation='L', unit='mm', format='A4')
         pdf.add_page()

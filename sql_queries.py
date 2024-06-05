@@ -163,6 +163,27 @@ def get_player_box_scores(player_name, event_keyword, selected_year):
 
     return player_scores
 
+def get_event_top_5ms(event_keyword, selected_year):
+    conn = st.connection("snowpark")
+    player_scores = pd.DataFrame()
+
+    if event_keyword and selected_year:
+        sql = f"""
+            SELECT 
+            MAX(PSP) AS TOP_PSP,
+            MAX(THREE_PE) AS TOP_THREE_PE,
+            MAX(ATR) AS TOP_ATR,
+            MAX(DSI) AS TOP_DSI,
+            MAX(FGS) AS TOP_FGS
+            FROM NIKE_TEST.SCHEMA_NIKE_TEST.PLAYER_STATS_JUNE_3
+            WHERE 
+                EVENT ILIKE '{event_keyword}' AND
+                YEAR = '{selected_year}'
+        """
+        
+        event_top_5ms = conn.query(sql)
+
+    return event_top_5ms
 
 def get_player_averages_dataframe(selected_event, selected_year):
     conn = st.connection("snowpark")
